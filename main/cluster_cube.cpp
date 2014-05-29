@@ -193,7 +193,7 @@ int main (int argc, char** argv)
 
   pcl::PCDReader reader;
   //reader.read<pcl::PointXYZRGB> ("/home/niladri-64/plc_kinect_workspace/robot/build/two_objects/saved_file4.pcd",*cloud_original);
-  reader.read<pcl::PointXYZRGB> ("/home/niladri-64/plc_kinect_workspace/openni_grabber/build/saved_file1.pcd",*cloud_original);
+  reader.read<pcl::PointXYZRGB> ("/home/niladri-64/plc_kinect_workspace/robot/build/saved_file1.pcd",*cloud_original);
 
  // TRansforming
 std::cout << cloud_original->points.size() << std::endl;
@@ -492,14 +492,14 @@ double width = maxPt.x - minPt.x;
           }
     }
 std::cout << coefficients->values[6] << "  "<< cyl_radius << std::endl;
-  double x = minPt.x + cyl_radius;//(maxPt.y + minPt.y)/2 ;//minPt.x - 0.09 ;
+  double x = minPt.x - 0.09 ;//minPt.x + cyl_radius;//(maxPt.y + minPt.y)/2 ;//minPt.x - 0.09 ;
   double avgy = (maxPt.y + minPt.y)/2 ;
-  double avgz =  maxPt.z + 0.09;   //(maxPt.z + minPt.z)/2;
+  double avgz =  (maxPt.z + minPt.z)/2;//maxPt.z + 0.09;   //(maxPt.z + minPt.z)/2;
 
   std::ofstream file_cartesian("/home/niladri-64/plc_kinect_workspace/robot/end_effector_cartesian.txt");
   if (file_cartesian.is_open())
     {
-      file_cartesian << x << " " << avgy  << " "<<avgz << " 0 0 -1 1 0 0"  ;
+      file_cartesian << x << " " << avgy  << " "<<avgz << " 1 0 0 0 0 1"  ;
     }
 
   file_cartesian.close();

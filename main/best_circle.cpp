@@ -126,7 +126,7 @@ void circlefit3d(double p1[3], double p2[3], double p3[3],
 
 
 
-std::ifstream infile("/home/niladri-64/module_heisenberg/data/camera_cordinates.txt");
+std::ifstream infile("/home/niladri-64/plc_kinect_workspace/robot/camera_cordinates.txt");
 
 std::string line;
 
@@ -143,7 +143,7 @@ int total_row = i;
 Eigen::MatrixXd m(i,3);
 
 std::vector<int> delimiter_indices ;
-std::ifstream infile2("/home/niladri-64/module_heisenberg/data/camera_cordinates.txt");
+std::ifstream infile2("/home/niladri-64/plc_kinect_workspace/robot/camera_cordinates.txt");
 
 std::string line2;
 int j =0,k = 0 ;
@@ -158,7 +158,7 @@ while (std::getline(infile2, line2))
     	std::cout << a << " " << b << " " << c <<std::endl;
     // process pair (a,b)
     	
-  		m(j,0) =  a;
+  			m(j,0) =  a;
  			m(j,1) =  b;
  			m(j,2) =  c;
       	

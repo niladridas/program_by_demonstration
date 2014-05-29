@@ -193,7 +193,7 @@ int main()
 	float upper_bound,   lower_bouond, resolution;
 
 	cout << "take as input the resolution in degrees: " << endl;
-	resolution =  0.1;
+	resolution =  0.01;
 
 	//Creating the vector of phi for searching
 	// size of the vector required
@@ -390,7 +390,7 @@ for(int k = 0; k < search_size; k++)
 
 	float temp_cos = dot_product/(cal_end_effector.norm()*DT_pos.norm());
 
-	float comp_temp_cos = cos(0.05/DT_pos.norm());
+	float comp_temp_cos = cos(0.025/DT_pos.norm());
 
 if(temp_cos >= comp_temp_cos || temp_cos <= -comp_temp_cos)
 {
