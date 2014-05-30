@@ -492,14 +492,14 @@ double width = maxPt.x - minPt.x;
           }
     }
 std::cout << coefficients->values[6] << "  "<< cyl_radius << std::endl;
-  double x = minPt.x - 0.09 ;//minPt.x + cyl_radius;//(maxPt.y + minPt.y)/2 ;//minPt.x - 0.09 ;
-  double avgy = (maxPt.y + minPt.y)/2 ;
-  double avgz =  (maxPt.z + minPt.z)/2;//maxPt.z + 0.09;   //(maxPt.z + minPt.z)/2;
+  double x = minPt.x + 0.04;//minPt.x - 0.08 ;//minPt.x + cyl_radius;//(maxPt.y + minPt.y)/2 ;//minPt.x - 0.09 ;
+  double avgy =(maxPt.y + minPt.y)/2 ;// maxPt.y + 0.13;//(maxPt.y + minPt.y)/2 ;
+  double avgz = maxPt.z + 0.11;//(maxPt.z + minPt.z)/2 + 0.03; //maxPt.z + 0.14;   //(maxPt.z + minPt.z)/2;
 
   std::ofstream file_cartesian("/home/niladri-64/module_heisenberg/data/end_effector_cartesian.txt");
   if (file_cartesian.is_open())
     {
-      file_cartesian << x << " " << avgy  << " "<<avgz << " 1 0 0 0 0 1"  ; // hard coded...should not be done like this
+      file_cartesian << x << " " << avgy  << " "<<avgz << " 0 0 -1 0 1 0"  ; // hard coded...should not be done like this
     }
 
   file_cartesian.close();

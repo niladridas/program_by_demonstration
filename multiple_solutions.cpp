@@ -390,7 +390,7 @@ for(int k = 0; k < search_size; k++)
 
 	float temp_cos = dot_product/(cal_end_effector.norm()*DT_pos.norm());
 
-	float comp_temp_cos = cos(0.025/DT_pos.norm());
+	float comp_temp_cos = cos(0.005/DT_pos.norm());
 
 if(temp_cos >= comp_temp_cos || temp_cos <= -comp_temp_cos)
 {

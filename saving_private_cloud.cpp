@@ -68,7 +68,7 @@ int flag = 0;
          save_cloud();
 //         count++;
          }
-         if (count >= 5)
+         if (count >= 2)
         		 {
         	 return;
         		 }
