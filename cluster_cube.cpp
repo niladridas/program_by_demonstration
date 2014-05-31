@@ -246,7 +246,7 @@ std::cout << temp_trans << std::endl ;
   pass.filter (*result_pass_filter0);
 
   pass.setFilterFieldName ("x");
-  pass.setFilterLimits (0.64, 1.0);
+  pass.setFilterLimits (0.54, 1.0);
   pass.setInputCloud (result_pass_filter0);
   pass.filter (*result_pass_filter1);
 
@@ -492,9 +492,9 @@ double width = maxPt.x - minPt.x;
           }
     }
 std::cout << coefficients->values[6] << "  "<< cyl_radius << std::endl;
-  double x = minPt.x + 0.04;//minPt.x - 0.08 ;//minPt.x + cyl_radius;//(maxPt.y + minPt.y)/2 ;//minPt.x - 0.09 ;
+  double x = minPt.x + 0.042;//////minPt.x + cyl_radius;//(maxPt.y + minPt.y)/2 ;//minPt.x - 0.09 ;
   double avgy =(maxPt.y + minPt.y)/2 ;// maxPt.y + 0.13;//(maxPt.y + minPt.y)/2 ;
-  double avgz = maxPt.z + 0.11;//(maxPt.z + minPt.z)/2 + 0.03; //maxPt.z + 0.14;   //(maxPt.z + minPt.z)/2;
+  double avgz = maxPt.z + 0.11;//(maxPt.z + minPt.z)/2 +0.04;////(maxPt.z + minPt.z)/2 + 0.03; //maxPt.z + 0.14;   //
 
   std::ofstream file_cartesian("/home/niladri-64/module_heisenberg/data/end_effector_cartesian.txt");
   if (file_cartesian.is_open())

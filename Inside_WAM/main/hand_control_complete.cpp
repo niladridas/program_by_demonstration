@@ -126,7 +126,8 @@ void printMenu() {
 	printf("  j  Enter a joint position destination\n");
 	printf("  i  Idle (release position/orientation constraints)\n");
 	printf("  q  Quit\n");
-	printf("  f  Calibrate using standard joint positions\n");
+	//printf("  f  Calibrate using standard joint positions\n");
+	printf("  g  Fingures spread by 60 degrees 1\n");
 
 }
 
@@ -174,6 +175,11 @@ int wam_main(int argc, char** argv, ProductManager& pm, systems::Wam<DOF>& wam) 
 			wam.idle();
 			break;
 
+		case 'g':
+			hand->trapezoidalMove(Hand::jp_type(M_PI/3.0), Hand::SPREAD);
+			break;
+
+
 		case 'o':
 			hand->initialize();
 //			hand->close(Hand::GRASP);
@@ -194,13 +200,13 @@ int wam_main(int argc, char** argv, ProductManager& pm, systems::Wam<DOF>& wam) 
 			hand->close(Hand::GRASP);
 			break;
 
-		case 'f':
-			while (std::getline(file_jp,line_jp))
-			{
-			moveToStr(wam, &jp, "joint positions", line_jp);
-			waitForEnter();
-			}
-			break;
+//		case 'f':
+//			while (std::getline(file_jp,line_jp))
+//			{
+//			moveToStr(wam, &jp, "joint positions", line_jp);
+//			waitForEnter();
+//			}
+//			break;
 
 		case 'd':
 //					hand->initialize();
