@@ -23,6 +23,5 @@ This code calculates the search region of PHI, which gives us all the solutions 
 7. multiple_solutions.cpp 
 This code gives us all the redundant Inverse Kinematics solution for a specific position and orientation along with user defined resolution.
 
-8.
 
 
