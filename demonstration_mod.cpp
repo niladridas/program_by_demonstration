@@ -79,6 +79,8 @@ Vector4f Red_in_yellow,Green_in_yellow,Centre_in_yellow, Red_yellow_robot, Green
 Vector2f Angle_vector, norm_angle_vector;
 
 
+			 std::ofstream f1("/home/niladri-64/module_heisenberg/data/demonstration.txt");
+
  class SimpleOpenNIViewer
  {
    public:
@@ -95,6 +97,10 @@ Vector2f Angle_vector, norm_angle_vector;
 	   temp_centre.push_back(Centre_yellow_robot(2));
 
 	   myvector.push_back(temp_centre);
+//	   for(int i = 0; i < myvector.size(); i++) {
+	  //			     f1 << myvector[i][0] << " " << myvector[i][1] << " " << myvector[i][2] << std::endl;
+	  				 f1 << temp_centre[0] << " " << temp_centre[1] <<std::endl;
+//	  			 }
 	}
 
    void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cloud)
@@ -124,6 +130,13 @@ Vector2f Angle_vector, norm_angle_vector;
 		   }
 
 		   MDetector.detect(image,Markers);
+
+		   while(Markers.size()==0)
+		   {
+//			   std::cin.get();
+//			   MDetector.detect(image,Markers);
+			   return ;
+		   }
 
 		   for (unsigned int i=0;i<Markers.size();i++)
 		   {
@@ -224,7 +237,7 @@ void CallBackFunc(int event, int x, int y, int flags, void* userdata)
    		   {
    			   cout << "Right button of the mouse is clicked - position (" << x << ", " << y << ")" << endl;
    			   v.save_cloud();
-   			   flag  = flag++;
+   			f1 <<"0" << " " << "0" << std::endl;
    			   //throw 10;
 
 
@@ -237,6 +250,10 @@ void CallBackFunc(int event, int x, int y, int flags, void* userdata)
    			   v.save_cloud();
    		  }
 
+   		   if ( event ==EVENT_MBUTTONDOWN)
+   		   {
+   			  flag  = flag++;
+   		   }
 
    	   }
 
@@ -264,9 +281,12 @@ void CallBackFunc(int event, int x, int y, int flags, void* userdata)
 //	 try{
 	 v.run ();
 //	 }
-//
-//	 catch (int e){
-			 std::cout << "The first centre" << myvector[0][0] << " " << myvector[0][1] << " " << myvector[0][2] << std::endl;
+
+	 std::cout << "The first centre" << myvector[0][0] << " " << myvector[0][1] << " " << myvector[0][2] << std::endl;
+
+
+
+			 f1.close();
 
 //		 }
 	 return 0;

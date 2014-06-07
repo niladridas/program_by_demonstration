@@ -138,6 +138,19 @@ cluster_cube/fast:
 .PHONY : cluster_cube/fast
 
 #=============================================================================
+# Target rules for targets named create_inference_input
+
+# Build rule for target.
+create_inference_input: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 create_inference_input
+.PHONY : create_inference_input
+
+# fast build rule for target.
+create_inference_input/fast:
+	$(MAKE) -f CMakeFiles/create_inference_input.dir/build.make CMakeFiles/create_inference_input.dir/build
+.PHONY : create_inference_input/fast
+
+#=============================================================================
 # Target rules for targets named create_input
 
 # Build rule for target.
@@ -325,6 +338,30 @@ cluster_cube.s: cluster_cube.cpp.s
 cluster_cube.cpp.s:
 	$(MAKE) -f CMakeFiles/cluster_cube.dir/build.make CMakeFiles/cluster_cube.dir/cluster_cube.cpp.s
 .PHONY : cluster_cube.cpp.s
+
+create_inference_input.o: create_inference_input.cpp.o
+.PHONY : create_inference_input.o
+
+# target to build an object file
+create_inference_input.cpp.o:
+	$(MAKE) -f CMakeFiles/create_inference_input.dir/build.make CMakeFiles/create_inference_input.dir/create_inference_input.cpp.o
+.PHONY : create_inference_input.cpp.o
+
+create_inference_input.i: create_inference_input.cpp.i
+.PHONY : create_inference_input.i
+
+# target to preprocess a source file
+create_inference_input.cpp.i:
+	$(MAKE) -f CMakeFiles/create_inference_input.dir/build.make CMakeFiles/create_inference_input.dir/create_inference_input.cpp.i
+.PHONY : create_inference_input.cpp.i
+
+create_inference_input.s: create_inference_input.cpp.s
+.PHONY : create_inference_input.s
+
+# target to generate assembly for a file
+create_inference_input.cpp.s:
+	$(MAKE) -f CMakeFiles/create_inference_input.dir/build.make CMakeFiles/create_inference_input.dir/create_inference_input.cpp.s
+.PHONY : create_inference_input.cpp.s
 
 create_input.o: create_input.cpp.o
 .PHONY : create_input.o
@@ -551,6 +588,7 @@ help:
 	@echo "... Inverse_Kinematics"
 	@echo "... best_circle"
 	@echo "... cluster_cube"
+	@echo "... create_inference_input"
 	@echo "... create_input"
 	@echo "... demonstration"
 	@echo "... demonstration_mod"
@@ -571,6 +609,9 @@ help:
 	@echo "... cluster_cube.o"
 	@echo "... cluster_cube.i"
 	@echo "... cluster_cube.s"
+	@echo "... create_inference_input.o"
+	@echo "... create_inference_input.i"
+	@echo "... create_inference_input.s"
 	@echo "... create_input.o"
 	@echo "... create_input.i"
 	@echo "... create_input.s"

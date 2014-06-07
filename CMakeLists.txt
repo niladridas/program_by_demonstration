@@ -44,6 +44,7 @@ target_link_libraries( demonstration ${OpenCV_LIBS} ${PCL_LIBRARIES} ${aruco_LIB
 add_executable( demonstration_mod demonstration_mod.cpp )
 target_link_libraries( demonstration_mod ${OpenCV_LIBS} ${PCL_LIBRARIES} ${aruco_LIBS})
 
+add_executable (create_inference_input create_inference_input.cpp)
 
 
 
