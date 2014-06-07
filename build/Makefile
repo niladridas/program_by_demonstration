@@ -164,6 +164,19 @@ demonstration/fast:
 .PHONY : demonstration/fast
 
 #=============================================================================
+# Target rules for targets named demonstration_mod
+
+# Build rule for target.
+demonstration_mod: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 demonstration_mod
+.PHONY : demonstration_mod
+
+# fast build rule for target.
+demonstration_mod/fast:
+	$(MAKE) -f CMakeFiles/demonstration_mod.dir/build.make CMakeFiles/demonstration_mod.dir/build
+.PHONY : demonstration_mod/fast
+
+#=============================================================================
 # Target rules for targets named gen_abs_orient
 
 # Build rule for target.
@@ -361,6 +374,30 @@ demonstration.cpp.s:
 	$(MAKE) -f CMakeFiles/demonstration.dir/build.make CMakeFiles/demonstration.dir/demonstration.cpp.s
 .PHONY : demonstration.cpp.s
 
+demonstration_mod.o: demonstration_mod.cpp.o
+.PHONY : demonstration_mod.o
+
+# target to build an object file
+demonstration_mod.cpp.o:
+	$(MAKE) -f CMakeFiles/demonstration_mod.dir/build.make CMakeFiles/demonstration_mod.dir/demonstration_mod.cpp.o
+.PHONY : demonstration_mod.cpp.o
+
+demonstration_mod.i: demonstration_mod.cpp.i
+.PHONY : demonstration_mod.i
+
+# target to preprocess a source file
+demonstration_mod.cpp.i:
+	$(MAKE) -f CMakeFiles/demonstration_mod.dir/build.make CMakeFiles/demonstration_mod.dir/demonstration_mod.cpp.i
+.PHONY : demonstration_mod.cpp.i
+
+demonstration_mod.s: demonstration_mod.cpp.s
+.PHONY : demonstration_mod.s
+
+# target to generate assembly for a file
+demonstration_mod.cpp.s:
+	$(MAKE) -f CMakeFiles/demonstration_mod.dir/build.make CMakeFiles/demonstration_mod.dir/demonstration_mod.cpp.s
+.PHONY : demonstration_mod.cpp.s
+
 gen_abs_orient.o: gen_abs_orient.cpp.o
 .PHONY : gen_abs_orient.o
 
@@ -516,6 +553,7 @@ help:
 	@echo "... cluster_cube"
 	@echo "... create_input"
 	@echo "... demonstration"
+	@echo "... demonstration_mod"
 	@echo "... edit_cache"
 	@echo "... gen_abs_orient"
 	@echo "... marker_detection"
@@ -539,6 +577,9 @@ help:
 	@echo "... demonstration.o"
 	@echo "... demonstration.i"
 	@echo "... demonstration.s"
+	@echo "... demonstration_mod.o"
+	@echo "... demonstration_mod.i"
+	@echo "... demonstration_mod.s"
 	@echo "... gen_abs_orient.o"
 	@echo "... gen_abs_orient.i"
 	@echo "... gen_abs_orient.s"

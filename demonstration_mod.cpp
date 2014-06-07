@@ -89,7 +89,7 @@ Vector2f Angle_vector, norm_angle_vector;
 
    void save_cloud()
 	{ // count++;
-	   std::vector<float> temp_centre(3) ;
+	   std::vector<float> temp_centre;
 	   temp_centre.push_back(Centre_yellow_robot(0));
 	   temp_centre.push_back(Centre_yellow_robot(1));
 	   temp_centre.push_back(Centre_yellow_robot(2));
@@ -101,6 +101,11 @@ Vector2f Angle_vector, norm_angle_vector;
 	 {
 	   if (cv::waitKey(30) != 27)
 		 {
+		   if(flag > 0)
+			   	            	   	   {
+			   	            	   		   return;
+			   	            	   	   }
+
 		   cv::Mat image(cloud->height, cloud->width, CV_8UC3);
 		   cv::Mat depth(cloud->height, cloud->width, CV_32FC1 );
 
@@ -155,7 +160,7 @@ Vector2f Angle_vector, norm_angle_vector;
 
 
 		   cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE );// Create a window for display.
-//		   cv::setMouseCallback("Display window", CallBackFunc, NULL);
+		   cv::setMouseCallback("Display window", CallBackFunc, NULL);
 		   cv::imshow( "Display window", image );
 //		   waitKey(0);
 
@@ -173,16 +178,35 @@ Vector2f Angle_vector, norm_angle_vector;
 			   boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
 
 	   interface->registerCallback (f);
+//	   cv::setMouseCallback("Display window", CallBackFunc, NULL);
 
 	   interface->start ();
+
 	   while (cv::waitKey(30) != 27)
 	         {
+		   if(flag > 0)
+	   	            	   	   {
+	   	            	   		   return;
+	   	            	   	   }
+//  }
 	           boost::this_thread::sleep (boost::posix_time::seconds (5));
-	           if(flag >= 0)
-	          {
-	          		   	   	   return;
-	          		   	   }
-	         }
+	          if(flag > 0)
+	   	            	   	   {
+	   	            	   		   return;
+	   	            	   	   }
+  }
+//
+//	   while(cv::waitKey(30) != 27)
+//	          {
+//	            boost::this_thread::sleep (boost::posix_time::seconds (5));
+//	   //         if (indicator > 0)
+//
+//	   //         {
+//	   //         save_cloud();
+//	   //         }
+//	            std::cout << "The value of the flag is" << std::endl;
+//   }
+	   return;
 
 
 
@@ -190,24 +214,25 @@ Vector2f Angle_vector, norm_angle_vector;
    }
 
 
-}v; //Creating object of class
+}
+ v; //Creating object of class
 
 void CallBackFunc(int event, int x, int y, int flags, void* userdata)
    	   {
 
    		   if  ( event == EVENT_RBUTTONDOWN )
    		   {
-//   			   cout << "Right button of the mouse is clicked - position (" << x << ", " << y << ")" << endl;
+   			   cout << "Right button of the mouse is clicked - position (" << x << ", " << y << ")" << endl;
    			   v.save_cloud();
    			   flag  = flag++;
-//   			   throw 10;
+   			   //throw 10;
 
 
    		   }
 
    		   if  ( event == EVENT_LBUTTONDOWN )
    		  {
-//   			   cout << "Left button of the mouse is clicked - position (" << x << ", " << y << ")" << endl;
+   			   cout << "Left button of the mouse is clicked - position (" << x << ", " << y << ")" << endl;
 //   			   std::cout << "do something" << std::endl;
    			   v.save_cloud();
    		  }
@@ -235,14 +260,15 @@ void CallBackFunc(int event, int x, int y, int flags, void* userdata)
 		  temp_trans(i,3) = d ;
 		  i ++;
 	  }
-	 cv::setMouseCallback("Display window", CallBackFunc, NULL);
+//	 cv::setMouseCallback("Display window", CallBackFunc, NULL);
 //	 try{
 	 v.run ();
 //	 }
+//
 //	 catch (int e){
-		 std::cout << myvector[0][0] << myvector[0][1] << myvector[0][2] << myvector[0][3] << std::endl;
-//	 }
+			 std::cout << "The first centre" << myvector[0][0] << " " << myvector[0][1] << " " << myvector[0][2] << std::endl;
 
+//		 }
 	 return 0;
  }
 

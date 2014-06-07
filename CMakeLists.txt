@@ -41,8 +41,8 @@ target_link_libraries( marker_detection ${OpenCV_LIBS} ${PCL_LIBRARIES} ${aruco_
 add_executable( demonstration demonstration.cpp )
 target_link_libraries( demonstration ${OpenCV_LIBS} ${PCL_LIBRARIES} ${aruco_LIBS})
 
-
-
+add_executable( demonstration_mod demonstration_mod.cpp )
+target_link_libraries( demonstration_mod ${OpenCV_LIBS} ${PCL_LIBRARIES} ${aruco_LIBS})
 
 
 
