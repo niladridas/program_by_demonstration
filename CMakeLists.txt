@@ -4,6 +4,7 @@ project(module_heisenberg)
 
 find_package(PCL 1.7.1 REQUIRED)
 find_package( OpenCV REQUIRED )
+find_package(aruco REQUIRED )
 
 find_library(EIGEN_LIB eigen $ENV{EIGEN_LIB_PATH})
 
@@ -31,8 +32,14 @@ target_link_libraries( saving_private_cloud ${PCL_LIBRARIES} )
 add_executable( best_circle best_circle.cpp )
 target_link_libraries( best_circle ${PCL_LIBRARIES} )
 
+add_executable( pcd_rgb_depth pcd_rgb_depth.cpp )
+target_link_libraries( pcd_rgb_depth ${OpenCV_LIBS} ${PCL_LIBRARIES} )
 
+add_executable( marker_detection marker_detection.cpp )
+target_link_libraries( marker_detection ${OpenCV_LIBS} ${PCL_LIBRARIES} ${aruco_LIBS})
 
+add_executable( demonstration demonstration.cpp )
+target_link_libraries( demonstration ${OpenCV_LIBS} ${PCL_LIBRARIES} ${aruco_LIBS})
 
 
 

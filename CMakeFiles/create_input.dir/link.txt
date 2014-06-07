@@ -1,1 +1,1 @@
-/usr/bin/c++     -Wno-deprecated     CMakeFiles/create_input.dir/create_input.cpp.o  -o create_input -rdynamic 
+/usr/bin/c++     -Wno-deprecated     CMakeFiles/create_input.dir/create_input.cpp.o  -o create_input -rdynamic -L/usr/local/lib 

@@ -435,6 +435,9 @@ QHULL_LIBRARY:FILEPATH=/usr/lib/libqhull.so
 //Path to a library.
 QHULL_LIBRARY_DEBUG:FILEPATH=/usr/lib/libqhull.so
 
+//The directory containing a CMake configuration file for aruco.
+aruco_DIR:PATH=/usr/local/share/aruco
+
 //Value Computed by CMake
 module_heisenberg_BINARY_DIR:STATIC=/home/niladri-64/module_heisenberg/build
 

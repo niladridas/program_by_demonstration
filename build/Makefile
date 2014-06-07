@@ -151,6 +151,19 @@ create_input/fast:
 .PHONY : create_input/fast
 
 #=============================================================================
+# Target rules for targets named demonstration
+
+# Build rule for target.
+demonstration: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 demonstration
+.PHONY : demonstration
+
+# fast build rule for target.
+demonstration/fast:
+	$(MAKE) -f CMakeFiles/demonstration.dir/build.make CMakeFiles/demonstration.dir/build
+.PHONY : demonstration/fast
+
+#=============================================================================
 # Target rules for targets named gen_abs_orient
 
 # Build rule for target.
@@ -164,6 +177,19 @@ gen_abs_orient/fast:
 .PHONY : gen_abs_orient/fast
 
 #=============================================================================
+# Target rules for targets named marker_detection
+
+# Build rule for target.
+marker_detection: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 marker_detection
+.PHONY : marker_detection
+
+# fast build rule for target.
+marker_detection/fast:
+	$(MAKE) -f CMakeFiles/marker_detection.dir/build.make CMakeFiles/marker_detection.dir/build
+.PHONY : marker_detection/fast
+
+#=============================================================================
 # Target rules for targets named multiple_solutions
 
 # Build rule for target.
@@ -175,6 +201,19 @@ multiple_solutions: cmake_check_build_system
 multiple_solutions/fast:
 	$(MAKE) -f CMakeFiles/multiple_solutions.dir/build.make CMakeFiles/multiple_solutions.dir/build
 .PHONY : multiple_solutions/fast
+
+#=============================================================================
+# Target rules for targets named pcd_rgb_depth
+
+# Build rule for target.
+pcd_rgb_depth: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 pcd_rgb_depth
+.PHONY : pcd_rgb_depth
+
+# fast build rule for target.
+pcd_rgb_depth/fast:
+	$(MAKE) -f CMakeFiles/pcd_rgb_depth.dir/build.make CMakeFiles/pcd_rgb_depth.dir/build
+.PHONY : pcd_rgb_depth/fast
 
 #=============================================================================
 # Target rules for targets named saving_private_cloud
@@ -298,6 +337,30 @@ create_input.cpp.s:
 	$(MAKE) -f CMakeFiles/create_input.dir/build.make CMakeFiles/create_input.dir/create_input.cpp.s
 .PHONY : create_input.cpp.s
 
+demonstration.o: demonstration.cpp.o
+.PHONY : demonstration.o
+
+# target to build an object file
+demonstration.cpp.o:
+	$(MAKE) -f CMakeFiles/demonstration.dir/build.make CMakeFiles/demonstration.dir/demonstration.cpp.o
+.PHONY : demonstration.cpp.o
+
+demonstration.i: demonstration.cpp.i
+.PHONY : demonstration.i
+
+# target to preprocess a source file
+demonstration.cpp.i:
+	$(MAKE) -f CMakeFiles/demonstration.dir/build.make CMakeFiles/demonstration.dir/demonstration.cpp.i
+.PHONY : demonstration.cpp.i
+
+demonstration.s: demonstration.cpp.s
+.PHONY : demonstration.s
+
+# target to generate assembly for a file
+demonstration.cpp.s:
+	$(MAKE) -f CMakeFiles/demonstration.dir/build.make CMakeFiles/demonstration.dir/demonstration.cpp.s
+.PHONY : demonstration.cpp.s
+
 gen_abs_orient.o: gen_abs_orient.cpp.o
 .PHONY : gen_abs_orient.o
 
@@ -322,6 +385,30 @@ gen_abs_orient.cpp.s:
 	$(MAKE) -f CMakeFiles/gen_abs_orient.dir/build.make CMakeFiles/gen_abs_orient.dir/gen_abs_orient.cpp.s
 .PHONY : gen_abs_orient.cpp.s
 
+marker_detection.o: marker_detection.cpp.o
+.PHONY : marker_detection.o
+
+# target to build an object file
+marker_detection.cpp.o:
+	$(MAKE) -f CMakeFiles/marker_detection.dir/build.make CMakeFiles/marker_detection.dir/marker_detection.cpp.o
+.PHONY : marker_detection.cpp.o
+
+marker_detection.i: marker_detection.cpp.i
+.PHONY : marker_detection.i
+
+# target to preprocess a source file
+marker_detection.cpp.i:
+	$(MAKE) -f CMakeFiles/marker_detection.dir/build.make CMakeFiles/marker_detection.dir/marker_detection.cpp.i
+.PHONY : marker_detection.cpp.i
+
+marker_detection.s: marker_detection.cpp.s
+.PHONY : marker_detection.s
+
+# target to generate assembly for a file
+marker_detection.cpp.s:
+	$(MAKE) -f CMakeFiles/marker_detection.dir/build.make CMakeFiles/marker_detection.dir/marker_detection.cpp.s
+.PHONY : marker_detection.cpp.s
+
 multiple_solutions.o: multiple_solutions.cpp.o
 .PHONY : multiple_solutions.o
 
@@ -345,6 +432,30 @@ multiple_solutions.s: multiple_solutions.cpp.s
 multiple_solutions.cpp.s:
 	$(MAKE) -f CMakeFiles/multiple_solutions.dir/build.make CMakeFiles/multiple_solutions.dir/multiple_solutions.cpp.s
 .PHONY : multiple_solutions.cpp.s
+
+pcd_rgb_depth.o: pcd_rgb_depth.cpp.o
+.PHONY : pcd_rgb_depth.o
+
+# target to build an object file
+pcd_rgb_depth.cpp.o:
+	$(MAKE) -f CMakeFiles/pcd_rgb_depth.dir/build.make CMakeFiles/pcd_rgb_depth.dir/pcd_rgb_depth.cpp.o
+.PHONY : pcd_rgb_depth.cpp.o
+
+pcd_rgb_depth.i: pcd_rgb_depth.cpp.i
+.PHONY : pcd_rgb_depth.i
+
+# target to preprocess a source file
+pcd_rgb_depth.cpp.i:
+	$(MAKE) -f CMakeFiles/pcd_rgb_depth.dir/build.make CMakeFiles/pcd_rgb_depth.dir/pcd_rgb_depth.cpp.i
+.PHONY : pcd_rgb_depth.cpp.i
+
+pcd_rgb_depth.s: pcd_rgb_depth.cpp.s
+.PHONY : pcd_rgb_depth.s
+
+# target to generate assembly for a file
+pcd_rgb_depth.cpp.s:
+	$(MAKE) -f CMakeFiles/pcd_rgb_depth.dir/build.make CMakeFiles/pcd_rgb_depth.dir/pcd_rgb_depth.cpp.s
+.PHONY : pcd_rgb_depth.cpp.s
 
 saving_private_cloud.o: saving_private_cloud.cpp.o
 .PHONY : saving_private_cloud.o
@@ -404,9 +515,12 @@ help:
 	@echo "... best_circle"
 	@echo "... cluster_cube"
 	@echo "... create_input"
+	@echo "... demonstration"
 	@echo "... edit_cache"
 	@echo "... gen_abs_orient"
+	@echo "... marker_detection"
 	@echo "... multiple_solutions"
+	@echo "... pcd_rgb_depth"
 	@echo "... rebuild_cache"
 	@echo "... saving_private_cloud"
 	@echo "... test_data_write_mod"
@@ -422,12 +536,21 @@ help:
 	@echo "... create_input.o"
 	@echo "... create_input.i"
 	@echo "... create_input.s"
+	@echo "... demonstration.o"
+	@echo "... demonstration.i"
+	@echo "... demonstration.s"
 	@echo "... gen_abs_orient.o"
 	@echo "... gen_abs_orient.i"
 	@echo "... gen_abs_orient.s"
+	@echo "... marker_detection.o"
+	@echo "... marker_detection.i"
+	@echo "... marker_detection.s"
 	@echo "... multiple_solutions.o"
 	@echo "... multiple_solutions.i"
 	@echo "... multiple_solutions.s"
+	@echo "... pcd_rgb_depth.o"
+	@echo "... pcd_rgb_depth.i"
+	@echo "... pcd_rgb_depth.s"
 	@echo "... saving_private_cloud.o"
 	@echo "... saving_private_cloud.i"
 	@echo "... saving_private_cloud.s"

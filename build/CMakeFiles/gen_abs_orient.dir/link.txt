@@ -1,1 +1,1 @@
-/usr/bin/c++     -Wno-deprecated     CMakeFiles/gen_abs_orient.dir/gen_abs_orient.cpp.o  -o gen_abs_orient -rdynamic 
+/usr/bin/c++     -Wno-deprecated     CMakeFiles/gen_abs_orient.dir/gen_abs_orient.cpp.o  -o gen_abs_orient -rdynamic -L/usr/local/lib 

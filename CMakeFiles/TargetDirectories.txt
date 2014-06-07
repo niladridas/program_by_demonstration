@@ -2,7 +2,10 @@
 /home/niladri-64/module_heisenberg/CMakeFiles/best_circle.dir
 /home/niladri-64/module_heisenberg/CMakeFiles/cluster_cube.dir
 /home/niladri-64/module_heisenberg/CMakeFiles/create_input.dir
+/home/niladri-64/module_heisenberg/CMakeFiles/demonstration.dir
 /home/niladri-64/module_heisenberg/CMakeFiles/gen_abs_orient.dir
+/home/niladri-64/module_heisenberg/CMakeFiles/marker_detection.dir
 /home/niladri-64/module_heisenberg/CMakeFiles/multiple_solutions.dir
+/home/niladri-64/module_heisenberg/CMakeFiles/pcd_rgb_depth.dir
 /home/niladri-64/module_heisenberg/CMakeFiles/saving_private_cloud.dir
 /home/niladri-64/module_heisenberg/CMakeFiles/test_data_write_mod.dir

@@ -1,1 +1,1 @@
-/usr/bin/c++     -Wno-deprecated     CMakeFiles/multiple_solutions.dir/multiple_solutions.cpp.o  -o multiple_solutions -rdynamic 
+/usr/bin/c++     -Wno-deprecated     CMakeFiles/multiple_solutions.dir/multiple_solutions.cpp.o  -o multiple_solutions -rdynamic -L/usr/local/lib 

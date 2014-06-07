@@ -1,1 +1,1 @@
-/usr/bin/c++     -Wno-deprecated     CMakeFiles/Inverse_Kinematics.dir/Inverse_Kinematics.cpp.o  -o Inverse_Kinematics -rdynamic 
+/usr/bin/c++     -Wno-deprecated     CMakeFiles/Inverse_Kinematics.dir/Inverse_Kinematics.cpp.o  -o Inverse_Kinematics -rdynamic -L/usr/local/lib 
