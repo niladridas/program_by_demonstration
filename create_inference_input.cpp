@@ -204,6 +204,7 @@ std :: cout  << demos_time[demos] <<std::endl;
 	float sum_abs_x = 0, mean_abs_x= 0 ,sum_rel_x = 0, mean_rel_x= 0 , var_abs_x , var_rel_x, sum_abs_x_sq = 0, sum_rel_x_sq = 0 ;
 	float sum_abs_y = 0, mean_abs_y= 0 ,sum_rel_y = 0, mean_rel_y= 0 , var_abs_y, var_rel_y,  sum_abs_y_sq = 0, sum_rel_y_sq = 0 ;
 	float score_abs , score_rel;
+	std::ofstream f1("/home/niladri-64/module_heisenberg/data/position_intention.txt");
 
 	std::vector< std::vector< std::vector<float>  > > scoring_matrix;
 	scoring_matrix.resize(demos_time[0]);
@@ -260,6 +261,17 @@ std :: cout  << demos_time[demos] <<std::endl;
 								score_rel=fabs(score_rel);
 								std::cout <<" Score abs "<< (score_abs) << std::endl ;
 								std::cout <<"Score rel " << (score_rel) << std::endl ;
+								if((score_abs) <= (score_rel))
+								{
+									std::cout << "The user intended to have a absolute position of" << mean_abs_x << " " << mean_abs_y << std::endl;
+									f1 << "abs " << mean_abs_x << " " << mean_abs_y << std::endl;
+								}
+								else
+								{
+									std::cout << "The user intended to have a relative position of" << mean_rel_x << " "<< mean_rel_y << std::endl;
+									f1 << "rel " << mean_rel_x << " " << mean_rel_y << std::endl;
+
+								}
 								scoring_matrix[time_num][0].push_back(mean_abs_x);
 								scoring_matrix[time_num][0].push_back(mean_abs_y);
 								scoring_matrix[time_num][0].push_back(var_abs_x);
@@ -279,19 +291,8 @@ std :: cout  << demos_time[demos] <<std::endl;
 
 
 				}
-			std::ofstream f1("/home/niladri-64/module_heisenberg/data/position_intention.txt");
 
-			if((score_abs) <= (score_rel))
-			{
-				std::cout << "The user intended to have a absolute position of" << mean_abs_x << " " << mean_abs_y << std::endl;
-				f1 << "abs " << mean_abs_x << " " << mean_abs_y << std::endl;
-			}
-			else
-			{
-				std::cout << "The user intended to have a relative position of" << mean_rel_x << " "<< mean_rel_y << std::endl;
-				f1 << "rel " << mean_rel_x << " " << mean_rel_y << std::endl;
 
-			}
 
 			f1.close();
 	return 0;

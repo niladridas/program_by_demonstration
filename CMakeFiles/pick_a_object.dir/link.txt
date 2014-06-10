@@ -1,0 +1,1 @@
+/usr/bin/c++     -Wno-deprecated     CMakeFiles/pick_a_object.dir/pick_a_object.cpp.o  -o pick_a_object -rdynamic -L/usr/local/lib 

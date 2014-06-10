@@ -44,8 +44,19 @@ target_link_libraries( demonstration ${OpenCV_LIBS} ${PCL_LIBRARIES} ${aruco_LIB
 add_executable( demonstration_mod demonstration_mod.cpp )
 target_link_libraries( demonstration_mod ${OpenCV_LIBS} ${PCL_LIBRARIES} ${aruco_LIBS})
 
-add_executable (create_inference_input create_inference_input.cpp)
+add_executable( demonstration_general demonstration_general.cpp )
+target_link_libraries( demonstration_general ${OpenCV_LIBS} ${PCL_LIBRARIES} ${aruco_LIBS})
 
+
+
+add_executable (create_inference_input create_inference_input.cpp)
+add_executable (inference_final inference_final.cpp)
+
+add_executable (pick_a_object pick_a_object.cpp)
+
+
+set(HEADER_FILES /home/niladri-64/module_heisenberg/func_inverse_kine.h /home/niladri-64/module_heisenberg/func_multi_sol.h)
+add_executable (basic_modules basic_modules.cpp ${HEADER_FILES})
 
 
 

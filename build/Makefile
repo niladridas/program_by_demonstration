@@ -112,6 +112,19 @@ Inverse_Kinematics/fast:
 .PHONY : Inverse_Kinematics/fast
 
 #=============================================================================
+# Target rules for targets named basic_modules
+
+# Build rule for target.
+basic_modules: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 basic_modules
+.PHONY : basic_modules
+
+# fast build rule for target.
+basic_modules/fast:
+	$(MAKE) -f CMakeFiles/basic_modules.dir/build.make CMakeFiles/basic_modules.dir/build
+.PHONY : basic_modules/fast
+
+#=============================================================================
 # Target rules for targets named best_circle
 
 # Build rule for target.
@@ -177,6 +190,19 @@ demonstration/fast:
 .PHONY : demonstration/fast
 
 #=============================================================================
+# Target rules for targets named demonstration_general
+
+# Build rule for target.
+demonstration_general: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 demonstration_general
+.PHONY : demonstration_general
+
+# fast build rule for target.
+demonstration_general/fast:
+	$(MAKE) -f CMakeFiles/demonstration_general.dir/build.make CMakeFiles/demonstration_general.dir/build
+.PHONY : demonstration_general/fast
+
+#=============================================================================
 # Target rules for targets named demonstration_mod
 
 # Build rule for target.
@@ -201,6 +227,19 @@ gen_abs_orient: cmake_check_build_system
 gen_abs_orient/fast:
 	$(MAKE) -f CMakeFiles/gen_abs_orient.dir/build.make CMakeFiles/gen_abs_orient.dir/build
 .PHONY : gen_abs_orient/fast
+
+#=============================================================================
+# Target rules for targets named inference_final
+
+# Build rule for target.
+inference_final: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 inference_final
+.PHONY : inference_final
+
+# fast build rule for target.
+inference_final/fast:
+	$(MAKE) -f CMakeFiles/inference_final.dir/build.make CMakeFiles/inference_final.dir/build
+.PHONY : inference_final/fast
 
 #=============================================================================
 # Target rules for targets named marker_detection
@@ -240,6 +279,19 @@ pcd_rgb_depth: cmake_check_build_system
 pcd_rgb_depth/fast:
 	$(MAKE) -f CMakeFiles/pcd_rgb_depth.dir/build.make CMakeFiles/pcd_rgb_depth.dir/build
 .PHONY : pcd_rgb_depth/fast
+
+#=============================================================================
+# Target rules for targets named pick_a_object
+
+# Build rule for target.
+pick_a_object: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 pick_a_object
+.PHONY : pick_a_object
+
+# fast build rule for target.
+pick_a_object/fast:
+	$(MAKE) -f CMakeFiles/pick_a_object.dir/build.make CMakeFiles/pick_a_object.dir/build
+.PHONY : pick_a_object/fast
 
 #=============================================================================
 # Target rules for targets named saving_private_cloud
@@ -290,6 +342,30 @@ Inverse_Kinematics.s: Inverse_Kinematics.cpp.s
 Inverse_Kinematics.cpp.s:
 	$(MAKE) -f CMakeFiles/Inverse_Kinematics.dir/build.make CMakeFiles/Inverse_Kinematics.dir/Inverse_Kinematics.cpp.s
 .PHONY : Inverse_Kinematics.cpp.s
+
+basic_modules.o: basic_modules.cpp.o
+.PHONY : basic_modules.o
+
+# target to build an object file
+basic_modules.cpp.o:
+	$(MAKE) -f CMakeFiles/basic_modules.dir/build.make CMakeFiles/basic_modules.dir/basic_modules.cpp.o
+.PHONY : basic_modules.cpp.o
+
+basic_modules.i: basic_modules.cpp.i
+.PHONY : basic_modules.i
+
+# target to preprocess a source file
+basic_modules.cpp.i:
+	$(MAKE) -f CMakeFiles/basic_modules.dir/build.make CMakeFiles/basic_modules.dir/basic_modules.cpp.i
+.PHONY : basic_modules.cpp.i
+
+basic_modules.s: basic_modules.cpp.s
+.PHONY : basic_modules.s
+
+# target to generate assembly for a file
+basic_modules.cpp.s:
+	$(MAKE) -f CMakeFiles/basic_modules.dir/build.make CMakeFiles/basic_modules.dir/basic_modules.cpp.s
+.PHONY : basic_modules.cpp.s
 
 best_circle.o: best_circle.cpp.o
 .PHONY : best_circle.o
@@ -411,6 +487,30 @@ demonstration.cpp.s:
 	$(MAKE) -f CMakeFiles/demonstration.dir/build.make CMakeFiles/demonstration.dir/demonstration.cpp.s
 .PHONY : demonstration.cpp.s
 
+demonstration_general.o: demonstration_general.cpp.o
+.PHONY : demonstration_general.o
+
+# target to build an object file
+demonstration_general.cpp.o:
+	$(MAKE) -f CMakeFiles/demonstration_general.dir/build.make CMakeFiles/demonstration_general.dir/demonstration_general.cpp.o
+.PHONY : demonstration_general.cpp.o
+
+demonstration_general.i: demonstration_general.cpp.i
+.PHONY : demonstration_general.i
+
+# target to preprocess a source file
+demonstration_general.cpp.i:
+	$(MAKE) -f CMakeFiles/demonstration_general.dir/build.make CMakeFiles/demonstration_general.dir/demonstration_general.cpp.i
+.PHONY : demonstration_general.cpp.i
+
+demonstration_general.s: demonstration_general.cpp.s
+.PHONY : demonstration_general.s
+
+# target to generate assembly for a file
+demonstration_general.cpp.s:
+	$(MAKE) -f CMakeFiles/demonstration_general.dir/build.make CMakeFiles/demonstration_general.dir/demonstration_general.cpp.s
+.PHONY : demonstration_general.cpp.s
+
 demonstration_mod.o: demonstration_mod.cpp.o
 .PHONY : demonstration_mod.o
 
@@ -458,6 +558,30 @@ gen_abs_orient.s: gen_abs_orient.cpp.s
 gen_abs_orient.cpp.s:
 	$(MAKE) -f CMakeFiles/gen_abs_orient.dir/build.make CMakeFiles/gen_abs_orient.dir/gen_abs_orient.cpp.s
 .PHONY : gen_abs_orient.cpp.s
+
+inference_final.o: inference_final.cpp.o
+.PHONY : inference_final.o
+
+# target to build an object file
+inference_final.cpp.o:
+	$(MAKE) -f CMakeFiles/inference_final.dir/build.make CMakeFiles/inference_final.dir/inference_final.cpp.o
+.PHONY : inference_final.cpp.o
+
+inference_final.i: inference_final.cpp.i
+.PHONY : inference_final.i
+
+# target to preprocess a source file
+inference_final.cpp.i:
+	$(MAKE) -f CMakeFiles/inference_final.dir/build.make CMakeFiles/inference_final.dir/inference_final.cpp.i
+.PHONY : inference_final.cpp.i
+
+inference_final.s: inference_final.cpp.s
+.PHONY : inference_final.s
+
+# target to generate assembly for a file
+inference_final.cpp.s:
+	$(MAKE) -f CMakeFiles/inference_final.dir/build.make CMakeFiles/inference_final.dir/inference_final.cpp.s
+.PHONY : inference_final.cpp.s
 
 marker_detection.o: marker_detection.cpp.o
 .PHONY : marker_detection.o
@@ -531,6 +655,30 @@ pcd_rgb_depth.cpp.s:
 	$(MAKE) -f CMakeFiles/pcd_rgb_depth.dir/build.make CMakeFiles/pcd_rgb_depth.dir/pcd_rgb_depth.cpp.s
 .PHONY : pcd_rgb_depth.cpp.s
 
+pick_a_object.o: pick_a_object.cpp.o
+.PHONY : pick_a_object.o
+
+# target to build an object file
+pick_a_object.cpp.o:
+	$(MAKE) -f CMakeFiles/pick_a_object.dir/build.make CMakeFiles/pick_a_object.dir/pick_a_object.cpp.o
+.PHONY : pick_a_object.cpp.o
+
+pick_a_object.i: pick_a_object.cpp.i
+.PHONY : pick_a_object.i
+
+# target to preprocess a source file
+pick_a_object.cpp.i:
+	$(MAKE) -f CMakeFiles/pick_a_object.dir/build.make CMakeFiles/pick_a_object.dir/pick_a_object.cpp.i
+.PHONY : pick_a_object.cpp.i
+
+pick_a_object.s: pick_a_object.cpp.s
+.PHONY : pick_a_object.s
+
+# target to generate assembly for a file
+pick_a_object.cpp.s:
+	$(MAKE) -f CMakeFiles/pick_a_object.dir/build.make CMakeFiles/pick_a_object.dir/pick_a_object.cpp.s
+.PHONY : pick_a_object.cpp.s
+
 saving_private_cloud.o: saving_private_cloud.cpp.o
 .PHONY : saving_private_cloud.o
 
@@ -586,23 +734,30 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... Inverse_Kinematics"
+	@echo "... basic_modules"
 	@echo "... best_circle"
 	@echo "... cluster_cube"
 	@echo "... create_inference_input"
 	@echo "... create_input"
 	@echo "... demonstration"
+	@echo "... demonstration_general"
 	@echo "... demonstration_mod"
 	@echo "... edit_cache"
 	@echo "... gen_abs_orient"
+	@echo "... inference_final"
 	@echo "... marker_detection"
 	@echo "... multiple_solutions"
 	@echo "... pcd_rgb_depth"
+	@echo "... pick_a_object"
 	@echo "... rebuild_cache"
 	@echo "... saving_private_cloud"
 	@echo "... test_data_write_mod"
 	@echo "... Inverse_Kinematics.o"
 	@echo "... Inverse_Kinematics.i"
 	@echo "... Inverse_Kinematics.s"
+	@echo "... basic_modules.o"
+	@echo "... basic_modules.i"
+	@echo "... basic_modules.s"
 	@echo "... best_circle.o"
 	@echo "... best_circle.i"
 	@echo "... best_circle.s"
@@ -618,12 +773,18 @@ help:
 	@echo "... demonstration.o"
 	@echo "... demonstration.i"
 	@echo "... demonstration.s"
+	@echo "... demonstration_general.o"
+	@echo "... demonstration_general.i"
+	@echo "... demonstration_general.s"
 	@echo "... demonstration_mod.o"
 	@echo "... demonstration_mod.i"
 	@echo "... demonstration_mod.s"
 	@echo "... gen_abs_orient.o"
 	@echo "... gen_abs_orient.i"
 	@echo "... gen_abs_orient.s"
+	@echo "... inference_final.o"
+	@echo "... inference_final.i"
+	@echo "... inference_final.s"
 	@echo "... marker_detection.o"
 	@echo "... marker_detection.i"
 	@echo "... marker_detection.s"
@@ -633,6 +794,9 @@ help:
 	@echo "... pcd_rgb_depth.o"
 	@echo "... pcd_rgb_depth.i"
 	@echo "... pcd_rgb_depth.s"
+	@echo "... pick_a_object.o"
+	@echo "... pick_a_object.i"
+	@echo "... pick_a_object.s"
 	@echo "... saving_private_cloud.o"
 	@echo "... saving_private_cloud.i"
 	@echo "... saving_private_cloud.s"

@@ -61,16 +61,20 @@ SET(CMAKE_MAKEFILE_PRODUCTS
 # Dependency information for all targets:
 SET(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/Inverse_Kinematics.dir/DependInfo.cmake"
+  "CMakeFiles/basic_modules.dir/DependInfo.cmake"
   "CMakeFiles/best_circle.dir/DependInfo.cmake"
   "CMakeFiles/cluster_cube.dir/DependInfo.cmake"
   "CMakeFiles/create_inference_input.dir/DependInfo.cmake"
   "CMakeFiles/create_input.dir/DependInfo.cmake"
   "CMakeFiles/demonstration.dir/DependInfo.cmake"
+  "CMakeFiles/demonstration_general.dir/DependInfo.cmake"
   "CMakeFiles/demonstration_mod.dir/DependInfo.cmake"
   "CMakeFiles/gen_abs_orient.dir/DependInfo.cmake"
+  "CMakeFiles/inference_final.dir/DependInfo.cmake"
   "CMakeFiles/marker_detection.dir/DependInfo.cmake"
   "CMakeFiles/multiple_solutions.dir/DependInfo.cmake"
   "CMakeFiles/pcd_rgb_depth.dir/DependInfo.cmake"
+  "CMakeFiles/pick_a_object.dir/DependInfo.cmake"
   "CMakeFiles/saving_private_cloud.dir/DependInfo.cmake"
   "CMakeFiles/test_data_write_mod.dir/DependInfo.cmake"
   )

@@ -164,7 +164,7 @@ int indicator = 0;
     	   Centre_in_yellow << cloud->at(row_centre_in_yellow,col_centre_in_yellow).x, cloud->at(row_centre_in_yellow,col_centre_in_yellow).y, cloud->at(row_centre_in_yellow,col_centre_in_yellow).z,1;
 
 
-    	   std::cout << "Difference" << (Red_in_yellow - Green_in_yellow).norm() << std::endl;
+//    	   std::cout << "Difference" << (Red_in_yellow - Green_in_yellow).norm() << std::endl;
     	   	// Transforming from camera frame to robot frame
     	    Eigen::Matrix4f temp_trans;
     	   	std::ifstream infile("/home/niladri-64/module_heisenberg/data/translation_matrix.txt");
@@ -191,20 +191,20 @@ int indicator = 0;
     	   	      }
 
    // 	   	std::cout << temp_trans << std::endl ;
-    	   	Vector4f Red_yellow_robot, Green_yellow_robot, Centre_yellow_robot;
-    	   	Red_yellow_robot = temp_trans*Red_in_yellow;
-    	   	Green_yellow_robot = temp_trans*Green_in_yellow;
-    	   	Centre_yellow_robot = temp_trans*Centre_in_yellow;
-
-    	   	std::cout << "Red spot " << Red_yellow_robot << std::endl;
-    	   	std::cout << "Green spot " << Green_yellow_robot << std::endl;
-    	   	std::cout << "Green Red diff" << (Red_yellow_robot - Green_yellow_robot) << std::endl;
-    	   	std::cout << "Difference" << (Red_yellow_robot - Green_yellow_robot).norm() << std::endl;
-
+//    	   	Vector4f Red_yellow_robot, Green_yellow_robot, Centre_yellow_robot;
+//    	   	Red_yellow_robot = temp_trans*Red_in_yellow;
+//    	   	Green_yellow_robot = temp_trans*Green_in_yellow;
+//    	   	Centre_yellow_robot = temp_trans*Centre_in_yellow;
 //
-    	   	Vector2f Angle_vector, norm_angle_vector;
-    	   	Angle_vector << (Red_yellow_robot - Green_yellow_robot)(0), (Red_yellow_robot - Green_yellow_robot)(1);
-    	   	norm_angle_vector = Angle_vector.normalized();
+//    	   	std::cout << "Red spot " << Red_yellow_robot << std::endl;
+//    	   	std::cout << "Green spot " << Green_yellow_robot << std::endl;
+//    	   	std::cout << "Green Red diff" << (Red_yellow_robot - Green_yellow_robot) << std::endl;
+//    	   	std::cout << "Difference" << (Red_yellow_robot - Green_yellow_robot).norm() << std::endl;
+//
+////
+//    	   	Vector2f Angle_vector, norm_angle_vector;
+//    	   	Angle_vector << (Red_yellow_robot - Green_yellow_robot)(0), (Red_yellow_robot - Green_yellow_robot)(1);
+//    	   	norm_angle_vector = Angle_vector.normalized();
 
 
 
@@ -229,16 +229,16 @@ int indicator = 0;
 //    	   	x_axis_box_robot << (tmp_x_axis_robot.normalized())(0),(tmp_x_axis_robot.normalized())(1),0,1;
 //
 //
-//    	   	// End effector co-ordinates
-    	    std::ofstream file_cartesian("/home/niladri-64/module_heisenberg/data/end_effector_cartesian.txt");
-    	    if (file_cartesian.is_open())
-    	      {
-    	        file_cartesian << Centre_yellow_robot(0) << " " << Centre_yellow_robot(1)  << " "<<  Centre_yellow_robot(2)+ 0.125 << " 0 0 -1 " <<  -norm_angle_vector(1) << " " << norm_angle_vector(0) << " " <<"0 " << std::endl  ;
-    	      }
-
-    	    file_cartesian.close();
+////    	   	// End effector co-ordinates
+//    	    std::ofstream file_cartesian("/home/niladri-64/module_heisenberg/data/end_effector_cartesian.txt");
+//    	    if (file_cartesian.is_open())
+//    	      {
+//    	        file_cartesian << Centre_yellow_robot(0) << " " << Centre_yellow_robot(1)  << " "<<  Centre_yellow_robot(2)+ 0.125 << " 0 0 -1 " <<  -norm_angle_vector(1) << " " << norm_angle_vector(0) << " " <<"0 " << std::endl  ;
+//    	      }
 //
-//    		}
+//    	    file_cartesian.close();
+////
+////    		}
 
     	   cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE );// Create a window for display.
     	   cv::imshow( "Display window", image );

@@ -65,7 +65,7 @@ using namespace aruco;
 using namespace cv;
 using namespace Eigen;
 
-
+#define PI 3.14159265;
 //void keyboardEventOccurred (const pcl::visualization::KeyboardEvent &event,void* viewer_void);
 void CallBackFunc(int event, int x, int y, int flags, void* userdata);
 //int count = 0;
@@ -75,7 +75,7 @@ Eigen::Matrix4f temp_trans;
 std::vector<std::vector<float> > centre_data;
 
 std::vector<std::vector<float> > myvector;
-Vector4f Red_in_yellow,Green_in_yellow,Centre_in_yellow, Red_yellow_robot, Green_yellow_robot, Centre_yellow_robot;
+Vector4f Red_in_yellow,Green_in_yellow,Centre_in_yellow, Red_yellow_robot, Green_yellow_robot, Centre_yellow_robot ;
 Vector2f Angle_vector, norm_angle_vector;
 
 
@@ -95,11 +95,15 @@ Vector2f Angle_vector, norm_angle_vector;
 	   temp_centre.push_back(Centre_yellow_robot(0));
 	   temp_centre.push_back(Centre_yellow_robot(1));
 	   temp_centre.push_back(Centre_yellow_robot(2));
+	   float angle = atan2 (norm_angle_vector(1),norm_angle_vector(0)) * 180 / PI;
+	   temp_centre.push_back(angle);
+
+
 
 	   myvector.push_back(temp_centre);
 //	   for(int i = 0; i < myvector.size(); i++) {
 	  //			     f1 << myvector[i][0] << " " << myvector[i][1] << " " << myvector[i][2] << std::endl;
-	  				 f1 << temp_centre[0] << " " << temp_centre[1] <<std::endl;
+	  				 f1 << temp_centre[0] << " " << temp_centre[1] << " " << temp_centre[2]<< " "<< temp_centre[3] << std::endl;
 //	  			 }
 	}
 
@@ -237,7 +241,7 @@ void CallBackFunc(int event, int x, int y, int flags, void* userdata)
    		   {
    			   cout << "Right button of the mouse is clicked - position (" << x << ", " << y << ")" << endl;
    			   v.save_cloud();
-   			f1 <<"0" << " " << "0" << std::endl;
+   			f1 <<"0" << " " << "0" << " " <<"0" << " " << "0" << std::endl;
    			   //throw 10;
 
 

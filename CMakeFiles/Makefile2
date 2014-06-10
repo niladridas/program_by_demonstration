@@ -88,13 +88,48 @@ clean: CMakeFiles/Inverse_Kinematics.dir/clean
 .PHONY : clean
 
 #=============================================================================
+# Target rules for target CMakeFiles/basic_modules.dir
+
+# All Build rule for target.
+CMakeFiles/basic_modules.dir/all:
+	$(MAKE) -f CMakeFiles/basic_modules.dir/build.make CMakeFiles/basic_modules.dir/depend
+	$(MAKE) -f CMakeFiles/basic_modules.dir/build.make CMakeFiles/basic_modules.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  2
+	@echo "Built target basic_modules"
+.PHONY : CMakeFiles/basic_modules.dir/all
+
+# Include target in all.
+all: CMakeFiles/basic_modules.dir/all
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/basic_modules.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/niladri-64/module_heisenberg/CMakeFiles 1
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/basic_modules.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/niladri-64/module_heisenberg/CMakeFiles 0
+.PHONY : CMakeFiles/basic_modules.dir/rule
+
+# Convenience name for target.
+basic_modules: CMakeFiles/basic_modules.dir/rule
+.PHONY : basic_modules
+
+# clean rule for target.
+CMakeFiles/basic_modules.dir/clean:
+	$(MAKE) -f CMakeFiles/basic_modules.dir/build.make CMakeFiles/basic_modules.dir/clean
+.PHONY : CMakeFiles/basic_modules.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/basic_modules.dir/clean
+.PHONY : clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/best_circle.dir
 
 # All Build rule for target.
 CMakeFiles/best_circle.dir/all:
 	$(MAKE) -f CMakeFiles/best_circle.dir/build.make CMakeFiles/best_circle.dir/depend
 	$(MAKE) -f CMakeFiles/best_circle.dir/build.make CMakeFiles/best_circle.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  2
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  3
 	@echo "Built target best_circle"
 .PHONY : CMakeFiles/best_circle.dir/all
 
@@ -129,7 +164,7 @@ clean: CMakeFiles/best_circle.dir/clean
 CMakeFiles/cluster_cube.dir/all:
 	$(MAKE) -f CMakeFiles/cluster_cube.dir/build.make CMakeFiles/cluster_cube.dir/depend
 	$(MAKE) -f CMakeFiles/cluster_cube.dir/build.make CMakeFiles/cluster_cube.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  3
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  4
 	@echo "Built target cluster_cube"
 .PHONY : CMakeFiles/cluster_cube.dir/all
 
@@ -164,7 +199,7 @@ clean: CMakeFiles/cluster_cube.dir/clean
 CMakeFiles/create_inference_input.dir/all:
 	$(MAKE) -f CMakeFiles/create_inference_input.dir/build.make CMakeFiles/create_inference_input.dir/depend
 	$(MAKE) -f CMakeFiles/create_inference_input.dir/build.make CMakeFiles/create_inference_input.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  4
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  5
 	@echo "Built target create_inference_input"
 .PHONY : CMakeFiles/create_inference_input.dir/all
 
@@ -199,7 +234,7 @@ clean: CMakeFiles/create_inference_input.dir/clean
 CMakeFiles/create_input.dir/all:
 	$(MAKE) -f CMakeFiles/create_input.dir/build.make CMakeFiles/create_input.dir/depend
 	$(MAKE) -f CMakeFiles/create_input.dir/build.make CMakeFiles/create_input.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  5
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  6
 	@echo "Built target create_input"
 .PHONY : CMakeFiles/create_input.dir/all
 
@@ -234,7 +269,7 @@ clean: CMakeFiles/create_input.dir/clean
 CMakeFiles/demonstration.dir/all:
 	$(MAKE) -f CMakeFiles/demonstration.dir/build.make CMakeFiles/demonstration.dir/depend
 	$(MAKE) -f CMakeFiles/demonstration.dir/build.make CMakeFiles/demonstration.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  6
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  7
 	@echo "Built target demonstration"
 .PHONY : CMakeFiles/demonstration.dir/all
 
@@ -263,13 +298,48 @@ clean: CMakeFiles/demonstration.dir/clean
 .PHONY : clean
 
 #=============================================================================
+# Target rules for target CMakeFiles/demonstration_general.dir
+
+# All Build rule for target.
+CMakeFiles/demonstration_general.dir/all:
+	$(MAKE) -f CMakeFiles/demonstration_general.dir/build.make CMakeFiles/demonstration_general.dir/depend
+	$(MAKE) -f CMakeFiles/demonstration_general.dir/build.make CMakeFiles/demonstration_general.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  8
+	@echo "Built target demonstration_general"
+.PHONY : CMakeFiles/demonstration_general.dir/all
+
+# Include target in all.
+all: CMakeFiles/demonstration_general.dir/all
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/demonstration_general.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/niladri-64/module_heisenberg/CMakeFiles 1
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/demonstration_general.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/niladri-64/module_heisenberg/CMakeFiles 0
+.PHONY : CMakeFiles/demonstration_general.dir/rule
+
+# Convenience name for target.
+demonstration_general: CMakeFiles/demonstration_general.dir/rule
+.PHONY : demonstration_general
+
+# clean rule for target.
+CMakeFiles/demonstration_general.dir/clean:
+	$(MAKE) -f CMakeFiles/demonstration_general.dir/build.make CMakeFiles/demonstration_general.dir/clean
+.PHONY : CMakeFiles/demonstration_general.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/demonstration_general.dir/clean
+.PHONY : clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/demonstration_mod.dir
 
 # All Build rule for target.
 CMakeFiles/demonstration_mod.dir/all:
 	$(MAKE) -f CMakeFiles/demonstration_mod.dir/build.make CMakeFiles/demonstration_mod.dir/depend
 	$(MAKE) -f CMakeFiles/demonstration_mod.dir/build.make CMakeFiles/demonstration_mod.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  7
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  9
 	@echo "Built target demonstration_mod"
 .PHONY : CMakeFiles/demonstration_mod.dir/all
 
@@ -304,7 +374,7 @@ clean: CMakeFiles/demonstration_mod.dir/clean
 CMakeFiles/gen_abs_orient.dir/all:
 	$(MAKE) -f CMakeFiles/gen_abs_orient.dir/build.make CMakeFiles/gen_abs_orient.dir/depend
 	$(MAKE) -f CMakeFiles/gen_abs_orient.dir/build.make CMakeFiles/gen_abs_orient.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  8
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  10
 	@echo "Built target gen_abs_orient"
 .PHONY : CMakeFiles/gen_abs_orient.dir/all
 
@@ -333,13 +403,48 @@ clean: CMakeFiles/gen_abs_orient.dir/clean
 .PHONY : clean
 
 #=============================================================================
+# Target rules for target CMakeFiles/inference_final.dir
+
+# All Build rule for target.
+CMakeFiles/inference_final.dir/all:
+	$(MAKE) -f CMakeFiles/inference_final.dir/build.make CMakeFiles/inference_final.dir/depend
+	$(MAKE) -f CMakeFiles/inference_final.dir/build.make CMakeFiles/inference_final.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  11
+	@echo "Built target inference_final"
+.PHONY : CMakeFiles/inference_final.dir/all
+
+# Include target in all.
+all: CMakeFiles/inference_final.dir/all
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/inference_final.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/niladri-64/module_heisenberg/CMakeFiles 1
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/inference_final.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/niladri-64/module_heisenberg/CMakeFiles 0
+.PHONY : CMakeFiles/inference_final.dir/rule
+
+# Convenience name for target.
+inference_final: CMakeFiles/inference_final.dir/rule
+.PHONY : inference_final
+
+# clean rule for target.
+CMakeFiles/inference_final.dir/clean:
+	$(MAKE) -f CMakeFiles/inference_final.dir/build.make CMakeFiles/inference_final.dir/clean
+.PHONY : CMakeFiles/inference_final.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/inference_final.dir/clean
+.PHONY : clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/marker_detection.dir
 
 # All Build rule for target.
 CMakeFiles/marker_detection.dir/all:
 	$(MAKE) -f CMakeFiles/marker_detection.dir/build.make CMakeFiles/marker_detection.dir/depend
 	$(MAKE) -f CMakeFiles/marker_detection.dir/build.make CMakeFiles/marker_detection.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  9
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  12
 	@echo "Built target marker_detection"
 .PHONY : CMakeFiles/marker_detection.dir/all
 
@@ -374,7 +479,7 @@ clean: CMakeFiles/marker_detection.dir/clean
 CMakeFiles/multiple_solutions.dir/all:
 	$(MAKE) -f CMakeFiles/multiple_solutions.dir/build.make CMakeFiles/multiple_solutions.dir/depend
 	$(MAKE) -f CMakeFiles/multiple_solutions.dir/build.make CMakeFiles/multiple_solutions.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  10
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  13
 	@echo "Built target multiple_solutions"
 .PHONY : CMakeFiles/multiple_solutions.dir/all
 
@@ -409,7 +514,7 @@ clean: CMakeFiles/multiple_solutions.dir/clean
 CMakeFiles/pcd_rgb_depth.dir/all:
 	$(MAKE) -f CMakeFiles/pcd_rgb_depth.dir/build.make CMakeFiles/pcd_rgb_depth.dir/depend
 	$(MAKE) -f CMakeFiles/pcd_rgb_depth.dir/build.make CMakeFiles/pcd_rgb_depth.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  11
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  14
 	@echo "Built target pcd_rgb_depth"
 .PHONY : CMakeFiles/pcd_rgb_depth.dir/all
 
@@ -438,13 +543,48 @@ clean: CMakeFiles/pcd_rgb_depth.dir/clean
 .PHONY : clean
 
 #=============================================================================
+# Target rules for target CMakeFiles/pick_a_object.dir
+
+# All Build rule for target.
+CMakeFiles/pick_a_object.dir/all:
+	$(MAKE) -f CMakeFiles/pick_a_object.dir/build.make CMakeFiles/pick_a_object.dir/depend
+	$(MAKE) -f CMakeFiles/pick_a_object.dir/build.make CMakeFiles/pick_a_object.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  15
+	@echo "Built target pick_a_object"
+.PHONY : CMakeFiles/pick_a_object.dir/all
+
+# Include target in all.
+all: CMakeFiles/pick_a_object.dir/all
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/pick_a_object.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/niladri-64/module_heisenberg/CMakeFiles 1
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/pick_a_object.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/niladri-64/module_heisenberg/CMakeFiles 0
+.PHONY : CMakeFiles/pick_a_object.dir/rule
+
+# Convenience name for target.
+pick_a_object: CMakeFiles/pick_a_object.dir/rule
+.PHONY : pick_a_object
+
+# clean rule for target.
+CMakeFiles/pick_a_object.dir/clean:
+	$(MAKE) -f CMakeFiles/pick_a_object.dir/build.make CMakeFiles/pick_a_object.dir/clean
+.PHONY : CMakeFiles/pick_a_object.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/pick_a_object.dir/clean
+.PHONY : clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/saving_private_cloud.dir
 
 # All Build rule for target.
 CMakeFiles/saving_private_cloud.dir/all:
 	$(MAKE) -f CMakeFiles/saving_private_cloud.dir/build.make CMakeFiles/saving_private_cloud.dir/depend
 	$(MAKE) -f CMakeFiles/saving_private_cloud.dir/build.make CMakeFiles/saving_private_cloud.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  12
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  16
 	@echo "Built target saving_private_cloud"
 .PHONY : CMakeFiles/saving_private_cloud.dir/all
 
@@ -479,7 +619,7 @@ clean: CMakeFiles/saving_private_cloud.dir/clean
 CMakeFiles/test_data_write_mod.dir/all:
 	$(MAKE) -f CMakeFiles/test_data_write_mod.dir/build.make CMakeFiles/test_data_write_mod.dir/depend
 	$(MAKE) -f CMakeFiles/test_data_write_mod.dir/build.make CMakeFiles/test_data_write_mod.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  13
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/niladri-64/module_heisenberg/CMakeFiles  17
 	@echo "Built target test_data_write_mod"
 .PHONY : CMakeFiles/test_data_write_mod.dir/all
 

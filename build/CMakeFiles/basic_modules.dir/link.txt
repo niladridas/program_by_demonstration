@@ -1,0 +1,1 @@
+/usr/bin/c++     -Wno-deprecated     CMakeFiles/basic_modules.dir/basic_modules.cpp.o  -o basic_modules -rdynamic -L/usr/local/lib 

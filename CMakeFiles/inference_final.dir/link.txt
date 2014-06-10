@@ -1,0 +1,1 @@
+/usr/bin/c++     -Wno-deprecated     CMakeFiles/inference_final.dir/inference_final.cpp.o  -o inference_final -rdynamic -L/usr/local/lib 

@@ -424,8 +424,13 @@ for(int i = 0; i < sol_counter; i++)
 //	cout << final_joint_angles << " " << endl;
 	cout << final_joint_sol << " " << endl;
 
+	char tmpFile[] = "./data/jpXXXXXX";
+		if (mkstemp(tmpFile) == -1) {
+			std::cout << "ERROR: Couldn't create temporary file!\n" << std::endl ;
 
-	  std::ofstream file_joint_positions("/home/niladri-64/module_heisenberg/data/joint_positions.txt");
+		}
+
+	  std::ofstream file_joint_positions(tmpFile);
 	  if (file_joint_positions.is_open())
 	    {
 		  file_joint_positions << final_joint_sol;
@@ -438,7 +443,8 @@ for(int i = 0; i < sol_counter; i++)
 
 // cout << "exmaple " << int(10.3) << endl;
 
-	return 0;
+	  cout << "Calculated jopint POsitions"  << endl;
+
 }
 
 
