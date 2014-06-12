@@ -58,6 +58,8 @@ add_executable (pick_a_object pick_a_object.cpp)
 set(HEADER_FILES /home/niladri-64/module_heisenberg/func_inverse_kine.h /home/niladri-64/module_heisenberg/func_multi_sol.h)
 add_executable (basic_modules basic_modules.cpp ${HEADER_FILES})
 
+add_executable (visuospatial visuospatial.cpp)
+
 
 
 

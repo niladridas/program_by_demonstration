@@ -68,6 +68,9 @@ using namespace Eigen;
 
 #define PI 3.14159265;
 
+float zHeight = 0.13;
+float xHeight = 0.03;
+
 void CallBackFunc(int event, int x, int y, int flags, void* userdata);
 
 int indicator = 0;
@@ -85,7 +88,7 @@ Vector2f Angle_vector_yellow, Angle_vector_white, Angle_vector_pink,  norm_angle
 float angle_yellow, angle_white, angle_pink;
 
 std::ofstream f1("/home/niladri-64/module_heisenberg/data/demonstration.txt");
-
+std::ofstream f2("/home/niladri-64/module_heisenberg/data/end_effector_cartesian2.txt");
 class SimpleOpenNIViewer
  {
    	public:
@@ -104,8 +107,10 @@ class SimpleOpenNIViewer
 	   for(int k = 0 ; k < Markers.size(); k++)
 	   {
 		   if(Markers[k].id == 24)
-			   f1 << Markers[k].id << " " << Centre_yellow_robot(0) << " " << Centre_yellow_robot(1) << " " <<  Centre_yellow_robot(2) << " " << angle_yellow << " "   ;
-
+		   { f1 << Markers[k].id << " " << Centre_yellow_robot(0) << " " << Centre_yellow_robot(1) << " " <<  Centre_yellow_robot(2) << " " << angle_yellow << " "   ;
+		   f2 << Centre_yellow_robot(0) << " " << Centre_yellow_robot(1) << " " <<  ( Centre_yellow_robot(2) + zHeight )  ;
+		   f2 << " 0 0 -1 0 1 0";
+		   }
 		   else if(Markers[k].id == 12)
 			   f1 << Markers[k].id << " " << Centre_white_robot(0) << " " << Centre_white_robot(1) << " " <<  Centre_white_robot(2) << " " << angle_white << " " ;
 
@@ -114,6 +119,7 @@ class SimpleOpenNIViewer
 
 	   }
 	   f1 << endl;
+	   f2<<endl;
 
 	}
 

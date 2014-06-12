@@ -1,0 +1,1 @@
+/usr/bin/c++     -Wno-deprecated     CMakeFiles/visuospatial.dir/visuospatial.cpp.o  -o visuospatial -rdynamic -L/usr/local/lib 

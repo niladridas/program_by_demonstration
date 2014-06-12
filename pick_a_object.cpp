@@ -68,6 +68,8 @@ Matrix4f frame_transformation(float A_f, float alpha_f, float D_f, float Theta_f
 
 void grabAndRaiseCartesian(float *finalXYZ, float* orientation,  float *jointPositionFinal,float *jointPositionj20)
 {
+	std::cout << " finalxyz  " << finalXYZ[0] << "    " << finalXYZ[1] << "   " << finalXYZ[2]<< std::endl;
+
 float  cartesianAndOrientation[9];
 cartesianAndOrientation[0] = finalXYZ[0];
 cartesianAndOrientation[1] = finalXYZ[1];
@@ -79,12 +81,17 @@ cartesianAndOrientation[6] = orientation[0];
 cartesianAndOrientation[7] = orientation[1];
 cartesianAndOrientation[8] = orientation[2];
 
+std::cout << "  cartesian " << cartesianAndOrientation[0] << "   " << cartesianAndOrientation [1] <<"   "<<  cartesianAndOrientation[2] << std::endl;
+std::cout << "  4 to 6  " << cartesianAndOrientation[3] << "   " << cartesianAndOrientation [4] <<"   "<<  cartesianAndOrientation[5] << std::endl;
+std::cout << "  orien " << cartesianAndOrientation[6] << "   " << cartesianAndOrientation [7] <<"   "<<  cartesianAndOrientation[8] << std::endl;
+
 float phi_search[2];
 int solutionCounter[1];
 char fileName[100];
 	func_inverse_kine(cartesianAndOrientation,phi_search);
-	 func_multi_sol(cartesianAndOrientation,phi_search,solutionCounter,fileName);
-std::cout << "Dasaasas dasd  " << *solutionCounter << fileName << std::endl;
+std::cout <<" phi search " << phi_search[0] << phi_search[1] << std::endl;
+	func_multi_sol(cartesianAndOrientation,phi_search,solutionCounter,fileName);
+std::cout << "Solution counter " << *solutionCounter << fileName << std::endl;
 
 std::ifstream infile(fileName);
 MatrixXf solutionSpace (*solutionCounter,7);
@@ -118,9 +125,9 @@ int index = 0;
 for(i =0;i < *solutionCounter; i++)
 	{
 	//std::cout << i << "  " << solutionSpace(i,0) << " " << min << std::endl;
-	float dummy = solutionSpace(i,0);
-	if(solutionSpace(i,0)<0)
-		dummy = -solutionSpace(i,0);
+	float dummy = solutionSpace(i,0) + solutionSpace(i,2);
+	if(solutionSpace(i,0)+ solutionSpace(i,2)<0)
+		dummy = -dummy;
 	if(dummy < min)
 		{
 		index = i;
@@ -305,27 +312,34 @@ waitForEnter();
      using namespace Eigen;
      int main()
      {
-    	     ifstream myReadFile;
-    	    	 myReadFile.open("/home/niladri-64/module_heisenberg/data/end_effector_cartesian.txt");
+    	 std::ifstream myReadFile("/home/niladri-64/module_heisenberg/data/end_effector_cartesian.txt");
+
+    	 std::string line2;
+    	 std::getline(myReadFile, line2);
+    	 std::istringstream iss(line2);
+    	     //ifstream myReadFile;
+    	    	// myReadFile.open("/home/niladri-64/module_heisenberg/data/end_effector_cartesian.txt");
+    	    	 float finalxyz[3];
+    	    	 float orientation[3];
     	    	 float output[9];
-    	    	 for(int i =0 ; i<9; i++)
-    	    	 {
-    	    		 myReadFile >> output[i];
-    	    	 }
+
+
+    	    		iss>> finalxyz[0] >> finalxyz[1] >> finalxyz[2] >> output[3] >> output[4] >> output[5] >> orientation[0] >> orientation[1] >> orientation[2]  ;
+
 
     	    	myReadFile.close();
 
     	    	float jp0[7] = {};
     	    	float jp[7]= {};
-
+    	    	std::cout << "output   "<<  finalxyz[0] << finalxyz[1] << finalxyz[2] << std::endl;
     	    	std::cout << "before func "<<std::endl;
-    	    	grabAndRaiseCartesian(output,output + 6*sizeof(float) ,jp,jp0) ;
+    	    	grabAndRaiseCartesian(finalxyz,orientation,jp,jp0) ;
     	    	std::cout << "after func " << std::endl;
 
 //std::string msg1 ;
 //{
 		std::ostringstream ss;
-		ss << "p 0 0 0.5" ;
+		ss<<  "j " << jp0[0] << " " << jp0[1] << " " << jp0[2] << " " << jp0[3] << " " << jp0[4] << " " << jp0[5] << " " << jp0[6];
 		sendData(&ss);
 		ss << "o" ;
 		sendData(&ss);

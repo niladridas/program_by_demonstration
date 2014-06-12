@@ -77,4 +77,5 @@ SET(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/pick_a_object.dir/DependInfo.cmake"
   "CMakeFiles/saving_private_cloud.dir/DependInfo.cmake"
   "CMakeFiles/test_data_write_mod.dir/DependInfo.cmake"
+  "CMakeFiles/visuospatial.dir/DependInfo.cmake"
   )

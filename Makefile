@@ -319,6 +319,19 @@ test_data_write_mod/fast:
 	$(MAKE) -f CMakeFiles/test_data_write_mod.dir/build.make CMakeFiles/test_data_write_mod.dir/build
 .PHONY : test_data_write_mod/fast
 
+#=============================================================================
+# Target rules for targets named visuospatial
+
+# Build rule for target.
+visuospatial: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 visuospatial
+.PHONY : visuospatial
+
+# fast build rule for target.
+visuospatial/fast:
+	$(MAKE) -f CMakeFiles/visuospatial.dir/build.make CMakeFiles/visuospatial.dir/build
+.PHONY : visuospatial/fast
+
 Inverse_Kinematics.o: Inverse_Kinematics.cpp.o
 .PHONY : Inverse_Kinematics.o
 
@@ -727,6 +740,30 @@ test_data_write_mod.cpp.s:
 	$(MAKE) -f CMakeFiles/test_data_write_mod.dir/build.make CMakeFiles/test_data_write_mod.dir/test_data_write_mod.cpp.s
 .PHONY : test_data_write_mod.cpp.s
 
+visuospatial.o: visuospatial.cpp.o
+.PHONY : visuospatial.o
+
+# target to build an object file
+visuospatial.cpp.o:
+	$(MAKE) -f CMakeFiles/visuospatial.dir/build.make CMakeFiles/visuospatial.dir/visuospatial.cpp.o
+.PHONY : visuospatial.cpp.o
+
+visuospatial.i: visuospatial.cpp.i
+.PHONY : visuospatial.i
+
+# target to preprocess a source file
+visuospatial.cpp.i:
+	$(MAKE) -f CMakeFiles/visuospatial.dir/build.make CMakeFiles/visuospatial.dir/visuospatial.cpp.i
+.PHONY : visuospatial.cpp.i
+
+visuospatial.s: visuospatial.cpp.s
+.PHONY : visuospatial.s
+
+# target to generate assembly for a file
+visuospatial.cpp.s:
+	$(MAKE) -f CMakeFiles/visuospatial.dir/build.make CMakeFiles/visuospatial.dir/visuospatial.cpp.s
+.PHONY : visuospatial.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -752,6 +789,7 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... saving_private_cloud"
 	@echo "... test_data_write_mod"
+	@echo "... visuospatial"
 	@echo "... Inverse_Kinematics.o"
 	@echo "... Inverse_Kinematics.i"
 	@echo "... Inverse_Kinematics.s"
@@ -803,6 +841,9 @@ help:
 	@echo "... test_data_write_mod.o"
 	@echo "... test_data_write_mod.i"
 	@echo "... test_data_write_mod.s"
+	@echo "... visuospatial.o"
+	@echo "... visuospatial.i"
+	@echo "... visuospatial.s"
 .PHONY : help
 
 

@@ -15,3 +15,4 @@
 /home/niladri-64/module_heisenberg/build/CMakeFiles/pick_a_object.dir
 /home/niladri-64/module_heisenberg/build/CMakeFiles/saving_private_cloud.dir
 /home/niladri-64/module_heisenberg/build/CMakeFiles/test_data_write_mod.dir
+/home/niladri-64/module_heisenberg/build/CMakeFiles/visuospatial.dir
