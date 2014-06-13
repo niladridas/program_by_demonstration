@@ -117,6 +117,7 @@ void circlefit3d(double p1[3], double p2[3], double p3[3],
 {
 	/* code */
 
+		std::vector <int> objectId ;
 
 
 std::ifstream infile("/home/niladri-64/module_heisenberg/data/camera_cordinates.txt");

@@ -47,6 +47,16 @@ target_link_libraries( demonstration_mod ${OpenCV_LIBS} ${PCL_LIBRARIES} ${aruco
 add_executable( demonstration_general demonstration_general.cpp )
 target_link_libraries( demonstration_general ${OpenCV_LIBS} ${PCL_LIBRARIES} ${aruco_LIBS})
 
+add_executable( demonstration_general_v3 demonstration_general_v3.cpp )
+target_link_libraries( demonstration_general_v3 ${OpenCV_LIBS} ${PCL_LIBRARIES} ${aruco_LIBS})
+
+
+
+
+add_executable( start_execution start_execution.cpp )
+target_link_libraries( start_execution ${OpenCV_LIBS} ${PCL_LIBRARIES} ${aruco_LIBS})
+
+
 
 
 add_executable (create_inference_input create_inference_input.cpp)
@@ -60,6 +70,7 @@ add_executable (basic_modules basic_modules.cpp ${HEADER_FILES})
 
 add_executable (visuospatial visuospatial.cpp)
 
+add_executable (robot_final_instruct robot_final_instruct.cpp)
 
 
 

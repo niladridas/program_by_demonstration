@@ -308,6 +308,7 @@ int time_count;
 int event_count;
 int event_data_count;
 std::stringstream inferred;
+std::stringstream inferred_code;
 
 for (demo_count =0; demo_count<demo_num;demo_count++)
 		for(time_count=1;time_count<time_stamps;time_count++)
@@ -315,40 +316,77 @@ for (demo_count =0; demo_count<demo_num;demo_count++)
 
 			int targetedObject = inference_matrix[demo_count][time_count][0][0];
 			//std::cout << "TOid " << targetedObject << std::endl;
-			inferred << targetedObject ;//<< std::endl;
-			for(event_count=1;event_count<idAndTypeOfEvents ; event_count++)
-			{
-				if(inference_matrix[demo_count][time_count][event_count][0]!=0)
-				{
-					if(event_count ==1) //position
+			inferred << targetedObject << " ";//<< std::endl;
+			inferred_code << targetedObject << " ";
+			//for(event_count=1;event_count<idAndTypeOfEvents ; event_count++)
+			//{
+				//if(inference_matrix[demo_count][time_count][event_count][0]!=0)
+				//{
+					if(inference_matrix[demo_count][time_count][1][0]!=0 && inference_matrix[demo_count][time_count][2][0]!=0) // position & angle
+					{
+						inferred << "'s position & angle was changed" ;
+						inferred << ". POsition by " ;
+						inferred_code << "POC ";
+						if(inference_matrix[demo_count][time_count][1][0]==2)
+							{
+							inferred << " absolutively to " << inference_matrix[demo_count][time_count][1][1] << " " << inference_matrix[demo_count][time_count][1][2];
+							inferred_code << "PAC " <<inference_matrix[demo_count][time_count][1][1] << " " << inference_matrix[demo_count][time_count][1][2];
+							}
+						if(inference_matrix[demo_count][time_count][1][0]==1)
+							{
+								inferred << " relatively to id of " <<inference_matrix[demo_count][time_count][1][1] ;
+								inferred << " and x displacement of " << inference_matrix[demo_count][time_count][1][2];
+								inferred << " and y displacement of " << inference_matrix[demo_count][time_count][1][3];
+								inferred_code << "PRC " <<  inference_matrix[demo_count][time_count][1][1] << " " ;
+								inferred_code << inference_matrix[demo_count][time_count][1][2] << " " << inference_matrix[demo_count][time_count][1][3] ;
+							}
+
+						inferred << "and angle was changed to " <<inference_matrix[demo_count][time_count][2][1] ;
+						inferred_code << "OAC" << " " << inference_matrix[demo_count][time_count][2][1];
+
+					}
+
+					else if(inference_matrix[demo_count][time_count][1][0]!=0) //only position
 					{
 						inferred << "'s position was changed";
-						if(inference_matrix[demo_count][time_count][event_count][0]==2)
+						if(inference_matrix[demo_count][time_count][1][0]==2)
 							{
-							inferred << " absolutively to " << inference_matrix[demo_count][time_count][event_count][1] << " " << inference_matrix[demo_count][time_count][event_count][2];
+							inferred << " absolutively to " << inference_matrix[demo_count][time_count][1][1] << " " << inference_matrix[demo_count][time_count][1][2];
+							inferred_code << "PAC " <<inference_matrix[demo_count][time_count][1][1] << " " << inference_matrix[demo_count][time_count][1][2];
 							}
-						if(inference_matrix[demo_count][time_count][event_count][0]==1)
+						if(inference_matrix[demo_count][time_count][1][0]==1)
 							{
-								inferred << " relatively to id of " <<inference_matrix[demo_count][time_count][event_count][1] ;
-								inferred << " and x displacement of " << inference_matrix[demo_count][time_count][event_count][2];
-								inferred << " and y displacement of " << inference_matrix[demo_count][time_count][event_count][3];
+								inferred << " relatively to id of " <<inference_matrix[demo_count][time_count][1][1] ;
+								inferred << " and x displacement of " << inference_matrix[demo_count][time_count][1][2];
+								inferred << " and y displacement of " << inference_matrix[demo_count][time_count][1][3];
+								inferred_code << "PRC " <<  inference_matrix[demo_count][time_count][1][1] << " " ;
+								inferred_code << inference_matrix[demo_count][time_count][1][2] << " " << inference_matrix[demo_count][time_count][1][3] ;
 							}
 
 					}
-					if(event_count==2) //angle
+
+					else if(inference_matrix[demo_count][time_count][2][0]!=0) //angle
 					{
-						inferred << "'s angle was changed to " <<inference_matrix[demo_count][time_count][event_count][1] ;
+						inferred << "'s angle was changed to " <<inference_matrix[demo_count][time_count][2][1] ;
+						inferred_code << "OAC" << " " << inference_matrix[demo_count][time_count][2][1];
 					}
+
 
 					inferred << std::endl;
+					inferred_code << std::endl;
 
-				}
-			}
+					std::ofstream myfile;
+					  myfile.open ("/home/niladri-64/module_heisenberg/data/robot_instruct.txt");
+					  myfile << inferred_code.str();
+
+				//}
+			//}
 
 		}
 
 std::cout <<"inferred is "  << std::endl<< inferred.str() << endl;
-	std::cout << "demo_num =  " << demo_num <<  std::endl;
+std::cout <<"inferred code is "  << std::endl<< inferred_code.str() << endl;
+	///std::cout << "demo_num =  " << demo_num <<  std::endl;
 
 	return 0;
 }

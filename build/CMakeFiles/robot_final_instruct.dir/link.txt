@@ -1,0 +1,1 @@
+/usr/bin/c++     -Wno-deprecated     CMakeFiles/robot_final_instruct.dir/robot_final_instruct.cpp.o  -o robot_final_instruct -rdynamic -L/usr/local/lib 
