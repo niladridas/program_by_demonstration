@@ -125,9 +125,13 @@ int index = 0;
 for(i =0;i < *solutionCounter; i++)
 	{
 	//std::cout << i << "  " << solutionSpace(i,0) << " " << min << std::endl;
-	float dummy = solutionSpace(i,0) + solutionSpace(i,2);
-	if(solutionSpace(i,0)+ solutionSpace(i,2)<0)
-		dummy = -dummy;
+	float dummy1 = solutionSpace(i,0);
+	float dummy2 = solutionSpace(i,2);
+	if(dummy1<0)
+		dummy1=-dummy1;
+	if(dummy2<0)
+		dummy2=-dummy2;
+	float dummy = dummy1 +dummy2;
 	if(dummy < min)
 		{
 		index = i;

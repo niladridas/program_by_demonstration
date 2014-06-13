@@ -270,14 +270,14 @@ for(i=0;i<observationVector.size();i++)
 								if(k)
 								{
 
-									inference_matrix[a1][a2][1][0] = 1;
+									inference_matrix[a1][a2][1][0] = 1; // relatively
 									inference_matrix[a1][a2][1][1] = objectId[*targetObject];
-									inference_matrix[a1][a2][1][2] =  observationVector[ (*targetObject)](a2,0);
-									inference_matrix[a1][a2][1][3] = observationVector[(*targetObject)](a2,1);
+									inference_matrix[a1][a2][1][2] =  - observationVector[ (*targetObject)](a2,0) + observationVector[a3](a2,0);
+									inference_matrix[a1][a2][1][3] = -observationVector[(*targetObject)](a2,1) + observationVector[a3](a2,1);
 								}
 								else
 								{
-									std :: cout << "sajdbjaasd af g" << std::endl;
+									//std :: cout << "sajdbjaasd af g" << std::endl;
 									inference_matrix[a1][a2][1][0] = 2;
 									inference_matrix[a1][a2][1][1] = observationVector[a3](a2,0);
 									inference_matrix[a1][a2][1][2] =  observationVector[a3](a2,1);
@@ -303,6 +303,51 @@ for(i=0;i<observationVector.size();i++)
 
 	displayVect4times(inference_matrix);
 
+int demo_count;
+int time_count;
+int event_count;
+int event_data_count;
+std::stringstream inferred;
+
+for (demo_count =0; demo_count<demo_num;demo_count++)
+		for(time_count=1;time_count<time_stamps;time_count++)
+		{
+
+			int targetedObject = inference_matrix[demo_count][time_count][0][0];
+			//std::cout << "TOid " << targetedObject << std::endl;
+			inferred << targetedObject ;//<< std::endl;
+			for(event_count=1;event_count<idAndTypeOfEvents ; event_count++)
+			{
+				if(inference_matrix[demo_count][time_count][event_count][0]!=0)
+				{
+					if(event_count ==1) //position
+					{
+						inferred << "'s position was changed";
+						if(inference_matrix[demo_count][time_count][event_count][0]==2)
+							{
+							inferred << " absolutively to " << inference_matrix[demo_count][time_count][event_count][1] << " " << inference_matrix[demo_count][time_count][event_count][2];
+							}
+						if(inference_matrix[demo_count][time_count][event_count][0]==1)
+							{
+								inferred << " relatively to id of " <<inference_matrix[demo_count][time_count][event_count][1] ;
+								inferred << " and x displacement of " << inference_matrix[demo_count][time_count][event_count][2];
+								inferred << " and y displacement of " << inference_matrix[demo_count][time_count][event_count][3];
+							}
+
+					}
+					if(event_count==2) //angle
+					{
+						inferred << "'s angle was changed to " <<inference_matrix[demo_count][time_count][event_count][1] ;
+					}
+
+					inferred << std::endl;
+
+				}
+			}
+
+		}
+
+std::cout <<"inferred is "  << std::endl<< inferred.str() << endl;
 	std::cout << "demo_num =  " << demo_num <<  std::endl;
 
 	return 0;
