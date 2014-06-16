@@ -2,29 +2,17 @@
  * Inverse_Kinematics.cpp
  *
  *  Created on: 17-Apr-2014
- *      Author: niladri-64
+ *      Author: Niladri Das & Ankit Pensia
  */
-/* This programme gives us the range of phi to search for the inverse kinematics solution for a given
+/* This function gives us the range of phi to search for the inverse kinematics solution for a given
  * end effector position and orientation. The position values are given as simple {x,y,z} and the orientation
  * is given as k_x,k_y and k_theta
+
+ This function takes 2 input paramters and then updates phi_search array with the calculated values.
+
+ This function was made from the programme Inverse_Kinematics.cpp
  */
-//#include <iostream>
-//#include <vector>
-//#include <math.h>
-//#include <cmath>
-//#include <Eigen/Dense>
-//#include <Eigen/SVD>
-//#include <Eigen/LU>
-//#include <Eigen/Geometry>
-//#include<fstream>
-//#include <string>
-//#include <boost/math/constants/constants.hpp>
-//
-//
-//using namespace Eigen;
-//using namespace std;
-//
-//
+
 
 #include "func_inverse_kine.h"
 

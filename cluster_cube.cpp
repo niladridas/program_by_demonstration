@@ -1,3 +1,22 @@
+/*
+* Created on: May 24, 2014
+* Author: Ankit Pensia
+Several functions are taken from PCL tutorial page to visualise the cloud at each step. Comment them to avoid visualising at each step.
+It takes a point cloud as input and then after several operations fit a cylinder model present in the view and give its co-ordinates.
+Process is as below
+1)At first, a  transformation matrix is loaded (to transform from kinects frame to robot's frame)
+2)Then pass through filter is used to remove the points other than table and its contents. This uses the assumption that we know the environment
+in which the robot is going to work. Parameters need to be changed if working in diffferent environment or need to be completely ignored.
+3)Then since only table remains after last pass through operations, the biggest plane will be table. It is searched and then removed from the PCL
+so that we may only search the contents that lie on the table.
+4) then cylinder segmentation is done on the points remaining in the point cloud and its point indices are extracted. Currently it only looks for only one cylinder
+but it can be easily extended.
+5) then statistical outlier removal(SOR) is used to remove the outliers. This is important because we then search in the
+extracted indices(and SOR filtered) to find the location where end effector of ROBOT shall go to grip it.
+6)minimum and maximum points of extracted and filter point indices are used to find the location of end effector. some  chnages are willingly made
+keeping the robot's dimension in mind.
+7) end effector location is saved in a file so that corresponding joint positions can then be calculated from it.
+*/
 #include <iostream>
 #include <pcl/ModelCoefficients.h>
 #include <pcl/io/pcd_io.h>

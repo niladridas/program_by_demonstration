@@ -1,10 +1,9 @@
 /*
- * create_inference_input.cpp
- *
- *  Created on: Jun 7, 2014
- *      Author: niladri-64
- */
+* Created on: June 12, 2014
+* Author: Ankit Pensia
 
+
+*/
 #include <iostream>
 #include <Eigen/Dense>
 #include <Eigen/SVD>
@@ -20,7 +19,7 @@ using namespace Eigen;
 float thresholdDistanceChange = 0.1;
 float thresholdHeightChange = 0.30;
 float thresholdAngleChange = 25;
-float thresholdRelativeDistanceChange = 0.1;
+float thresholdRelativeDistanceChange = 0.25;
 //typedef int demo_num ;
 
 bool isPositionChanged (int timeStamp, MatrixXf obsMatrix , float *distanceChange)
@@ -174,7 +173,7 @@ int main()
 		std::vector <int> objectId ;
 
 int k=0;
-	std::ifstream infile2("/home/niladri-64/module_heisenberg/data/demo1_info.txt");
+	std::ifstream infile2("/home/niladri-64/module_heisenberg/data/demo_info.txt");
 		std::string line2;
 		while (std::getline(infile2, line2))
 		{

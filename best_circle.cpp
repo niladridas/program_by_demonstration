@@ -1,3 +1,32 @@
+
+/*
+* Created on: May 22, 2014
+* Author: Ankit Pensia
+
+Circlefit3d Matlab script is converted to C++ which can be found at:- http://www.mathworks.com/matlabcentral/fileexchange/34792-circlefit3d-fit-circle-to-three-points-in-3d-space
+Due credits to the author
+
+* Best Circle - It calculates the center of the cirlce of the given set of points (in the given case, the points on the exterior of barret arm) and
+* chose the circle and hence center which is closest to the circle of radius 4.45 cm (already known radius of barret hand. ) )
+It is done for better caliberation. We need to transform from PCL to robot's frame. Robot's end effector points is close to the center of above circle.
+*
+*Input is in the format
+* _________________
+*0 0 0
+x1 y1 z1
+... such 5-6 set of points  in each new line
+0 0 0
+then another set of points
+0 0 0
+another set of points
+0 0 0
+another set
+0 0 0
+_______________________
+
+It outputs the center of 4 sets of points in a new file(camera_centers).
+
+*/
 #include <iostream>
 #include <boost/thread/thread.hpp>
 #include <pcl/filters/statistical_outlier_removal.h>

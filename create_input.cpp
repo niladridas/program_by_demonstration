@@ -1,4 +1,12 @@
+/*
+* Created on: May 22, 2014
+* Author: Ankit Pensia
+It does nothing except the fact that it takes two files and concatenate their lines in a new text file.
+it is required so that transformation matrix can be calculated from the newly created file.
 
+4 lines of observations
+first robot frame co-ordinates and then camera frame(created from best_circle.cpp) co-ordinates of the same point.
+*/
 #include <string>
 #include <sstream>
 #include <fstream>

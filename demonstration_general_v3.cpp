@@ -122,11 +122,11 @@ std::ofstream f1("/home/niladri-64/module_heisenberg/data/id10.txt");
 
 //	 std::stringstream oss8;
 //	 oss8<<"/home/niladri-64/module_heisenberg/data/id22.txt";
-	 std::ofstream f7("/home/niladri-64/module_heisenberg/data/id22.txt");
+	 std::ofstream f7("/home/niladri-64/module_heisenberg/data/id36.txt");
 
 //	 std::stringstream oss9;
 //	 oss9<<"/home/niladri-64/module_heisenberg/data/id24.txt";
-	 std::ofstream f8("/home/niladri-64/module_heisenberg/data/id24.txt");
+	 std::ofstream f8("/home/niladri-64/module_heisenberg/data/id44.txt");
 
 
 class SimpleOpenNIViewer
@@ -198,12 +198,12 @@ class SimpleOpenNIViewer
 			f6 <<  time_stamp << " " << Centre_in_robot(0) << " " << Centre_in_robot(1) << " " <<  Centre_in_robot(2) << " " << angle << std::endl;
 									break;
 
-			case 22:
+			case 36:
 				 flag_obj[6] = 1;
 			f7 <<  time_stamp << " " << Centre_in_robot(0) << " " << Centre_in_robot(1) << " " <<  Centre_in_robot(2) << " " << angle << std::endl;
 									break;
 
-			case 24:
+			case 44:
 				 flag_obj[7] = 1;
 			f8 <<  time_stamp << " " << Centre_in_robot(0) << " " << Centre_in_robot(1) << " " <<  Centre_in_robot(2) << " " << angle << std::endl;
 									break;
@@ -407,9 +407,9 @@ void CallBackFunc(int event, int x, int y, int flags, void* userdata)
 		 if(flag_obj[5] == 1)
 		 			 f0 << 20 << " " ;
 		 if(flag_obj[6] == 1)
-		 			 f0 << 22 << " " ;
+		 			 f0 << 36 << " " ;
 		 if(flag_obj[7] == 1)
-		 			 f0 << 24 << " " ;
+		 			 f0 << 44 << " " ;
 
 
 

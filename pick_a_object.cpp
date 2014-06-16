@@ -1,3 +1,37 @@
+/*
+* Created on: June 10, 2014
+* Author: Ankit Pensia
+
+The purpose of this file was to create the functions  grabAndRaiseCartesian and changeOrientation.
+
+More functions can be found in file robot_final_instruct.cpp.
+grabAndRaiseCartesian was also deprecated to make way for better functions with more flexibility and user-friendliness.
+But it will always be alive in my hearts forever.
+
+void grabAndRaiseCartesian
+
+grabAndRaiseCartesian in this form takes the input , finalXYZ location and its orientation.
+It then do inverse kinematics using func_inverse_kine and func_multi_sol, and get lots of solutions in a file.
+It then searches for the optimum solution which in present case the one which doesn't make much changes in joint angle 0 and joint angle3 combined.
+this can be easily changed in future.
+It then updates the two float arrays jointPositionFinal and jointPositionj20, which are basically the same except in jointPositionj20, the 3 rd joint angle is 0
+jointPositionj20 refers to the position in which robot approaches first and then open its hand to do further work.
+then it goes in jointPositionFinal position to reach the object  and close the grasp and do further work.
+
+
+
+void changeOrientation
+this was created keeping in mind that it will just change the orientation of object, keeping the position same.
+this function will not be developed as the same work can be done using  grabAndRaiseCartesian by just changing the orientation in the  9-sized array.
+they basically do the same work.
+
+
+A socket is created to pass the commands to robot. codewords used for robot arm manipulation can be found in file hand_control_complete .
+
+// the main function just contains the manual code it check if it works or not and It was working absolutely fine.
+ * Kudos!!
+*/
+
 #include <iostream>
 #include <Eigen/Dense>
 #include <Eigen/SVD>

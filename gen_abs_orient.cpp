@@ -4,6 +4,11 @@
  *  Created on: 26-Feb-2014
  *      Author: blue
  */
+
+// Due credits to author,
+// It creates the transformation matrix and saves it in translation_matrix.
+// also it give values like c which is scaling factor. In out case it should be 1 because both frames uses meter as their scale.
+// If it is 0, new set of points are needed.
 #include <iostream>
 #include <Eigen/Dense>
 #include <Eigen/SVD>

@@ -82,7 +82,7 @@ void CallBackFunc(int event, int x, int y, int flags, void* userdata);
 
 Eigen::Matrix4f temp_trans;
 
-std::ofstream f1("/home/niladri-64/module_heisenberg/data/demonstration.txt");
+std::ofstream f1("/home/niladri-64/module_heisenberg/data/initial_condition.txt");
 
 class SimpleOpenNIViewer
  {

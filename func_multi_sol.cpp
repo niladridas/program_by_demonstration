@@ -2,46 +2,19 @@
  * multiple_solutions.cpp
  *
  *  Created on: 21-Apr-2014
- *      Author: niladri-64
+ *      Author: Niladri Das & Ankit Pensia
  */
 
 /*
- * Inverse_Kinematics.cpp
- *
- *  Created on: 17-Apr-2014
- *      Author: niladri-64
- */
 /* This programme gives us the range of phi to search for the inverse kinematics solution for a given
  * end effector position and orientation. The position values are given as simple {x,y,z} and the orientation
  * is given as k_x,k_y and k_theta
+ *
+ * This function takes 4 input paramters and then calculates various joint positions combination which can be used to reach the final location.
+It also updates the solutioncounter with no. of solutions found. It creates a text file of all solutions and update the name of the file in char array filename.
+ This function was made from the programme multiple_solutions.cpp
  */
-//#include <iostream>
-//#include <vector>
-//#include <math.h>
-//#include <cmath>
-//#include <Eigen/Dense>
-//#include <Eigen/SVD>
-//#include <Eigen/LU>
-//#include <Eigen/Geometry>
-//#include<fstream>
-//#include <string>
-//#include <boost/math/constants/constants.hpp>
 
-
-//using namespace Eigen;
-//using namespace std;
-//
-//
-//
-//Matrix4f frame_transformation(float A_f, float alpha_f, float D_f, float Theta_f)
-//{
-//	Matrix4f T;
-//	T << cos(Theta_f), -sin(Theta_f)*cos(alpha_f), sin(Theta_f)*sin(alpha_f), A_f*cos(Theta_f),
-//	     sin(Theta_f), cos(Theta_f)*cos(alpha_f), -cos(Theta_f)*sin(alpha_f), A_f*sin(Theta_f),
-//	     0,            sin(alpha_f),               cos(alpha_f),              D_f,
-//	     0,            0,                          0,                         1;
-//	return T;
-//}
 
 
 #include "func_multi_sol.h"

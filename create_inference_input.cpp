@@ -2,7 +2,30 @@
  * create_inference_input.cpp
  *
  *  Created on: Jun 7, 2014
- *      Author: niladri-64
+ *      Author: Niladri Das & Ankit Pensia
+ It  makes the inference of the type of the operation and the intention of the user behind it from the set of observations.
+It takes the input in the form of a txt file where each line denotes the time stamp and it contains x and y position of the object.
+if a row of 0 0 is found. It means a new demonstration has begun. The location of that row is stored in a Vector and is used to keep the track of
+no of time stamps in each demonstration.
+That information of complete txt file is stored in a as it is, in eigen matrix.
+and then a inference matrix is made(actually a vector of vector of vector of vector).
+
+	std::vector< std::vector< std::vector< std::vector<float> >  > > inference_matrix;
+
+
+	// The lowest level vector denotes the x y co-ordinates
+	// The next outer level denotes the whether absolute or relative observation.
+	// The next outer level denotes the time stamp in the given demonstration (instance stamp)
+	// The next outer level denotes the demonstration stamp (which demonstration ?)
+	 *
+	 *
+	 * It just stores the observation in different format than eigen matrix created earlier.
+	 * It saves the same information twice in the format of absolute and relative recordings so that
+	 * further methods can be used to identify which of them was intended.
+It then creates the score of intention of the user in the scoring matrix. (using standard deviation) (i.e to identify absolute position or relative posiition
+was required. The one with less standard deviation is the intention of user)
+
+The further development of this file for multiple objects was left and another file was used using the ideas of this file.
  */
 
 #include <iostream>

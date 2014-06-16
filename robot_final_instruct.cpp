@@ -1,3 +1,16 @@
+/*
+* Created on: June 13, 2014
+* Author: Ankit Pensia
+
+A large number of functions are created that so that informaton exchange between robot and machine can be done in abstractive level.
+It is grown on the existingf file pick_a_object.cpp
+
+
+A socket is created to pass the commands to robot. codewords used for robot arm manipulation can be found in file hand_control_complete .
+
+
+*/
+
 #include <iostream>
 #include <Eigen/Dense>
 #include <Eigen/SVD>
@@ -17,6 +30,7 @@
 #include<fstream>
 #include <string>
 #include <boost/math/constants/constants.hpp>
+#include <time.h>
 
 #include <iostream>
 #include <vector>
@@ -62,103 +76,21 @@ Matrix4f frame_transformation(float A_f, float alpha_f, float D_f, float Theta_f
 #include "func_multi_sol.h"
 
 #define PI 3.141592653589793
+float thresholdNearDistance = 0.14;
+float zOffset = 0.13;
 
-
-
-
-void grabAndRaiseCartesian(float *finalXYZ, float* orientation,  float *jointPositionFinal,float *jointPositionj20)
-{
-	std::cout << " finalxyz  " << finalXYZ[0] << "    " << finalXYZ[1] << "   " << finalXYZ[2]<< std::endl;
-
-float  cartesianAndOrientation[9];
-cartesianAndOrientation[0] = finalXYZ[0];
-cartesianAndOrientation[1] = finalXYZ[1];
-cartesianAndOrientation[2] = finalXYZ[2];
-cartesianAndOrientation[3] = 0;
-cartesianAndOrientation[4] = 0;
-cartesianAndOrientation[5] = -1;
-cartesianAndOrientation[6] = orientation[0];
-cartesianAndOrientation[7] = orientation[1];
-cartesianAndOrientation[8] = orientation[2];
-
-std::cout << "  cartesian " << cartesianAndOrientation[0] << "   " << cartesianAndOrientation [1] <<"   "<<  cartesianAndOrientation[2] << std::endl;
-std::cout << "  4 to 6  " << cartesianAndOrientation[3] << "   " << cartesianAndOrientation [4] <<"   "<<  cartesianAndOrientation[5] << std::endl;
-std::cout << "  orien " << cartesianAndOrientation[6] << "   " << cartesianAndOrientation [7] <<"   "<<  cartesianAndOrientation[8] << std::endl;
-
-float phi_search[2];
-int solutionCounter[1];
-char fileName[100];
-	func_inverse_kine(cartesianAndOrientation,phi_search);
-std::cout <<" phi search " << phi_search[0] << phi_search[1] << std::endl;
-	func_multi_sol(cartesianAndOrientation,phi_search,solutionCounter,fileName);
-std::cout << "Solution counter " << *solutionCounter << fileName << std::endl;
-
-std::ifstream infile(fileName);
-MatrixXf solutionSpace (*solutionCounter,7);
-std::string line;
-
-int i = 0;
-while (std::getline(infile, line))
-      {
-          std::istringstream iss(line);
-          double a, b,c,d,e,f,g;
-          if (!(iss >> a >> b >> c >> d >> e >> f >> g))
-            { break; } // error
-//            std::cout << a << " " << b << " " << c << " " << d <<std::endl;
-          // process pair (a,b)
-
-              solutionSpace(i,0) =  a;
-              solutionSpace(i,1) =  b;
-              solutionSpace(i,2) =  c;
-              solutionSpace(i,3) = d ;
-              solutionSpace(i,4) =  e;
-              solutionSpace(i,5) =  f;
-              solutionSpace(i,6) = g;
-
-
-      i ++;
-      }
-//std::cout << solutionSpace << std::endl;
-
-float min = 99999999999;
-int index = 0;
-for(i =0;i < *solutionCounter; i++)
-	{
-	//std::cout << i << "  " << solutionSpace(i,0) << " " << min << std::endl;
-	float dummy1 = solutionSpace(i,0);
-	float dummy2 = solutionSpace(i,2);
-	if(dummy1<0)
-		dummy1=-dummy1;
-	if(dummy2<0)
-		dummy2=-dummy2;
-	float dummy = dummy1 +dummy2;
-	if(dummy < min)
-		{
-		index = i;
-		min = dummy;
-		}
-	}
-
-std::cout << "index = " << index << std::endl;
-
-
-for(i=0;i<7;i++)
-{
-	jointPositionFinal[i]= solutionSpace(index,i);
-	jointPositionj20[i] = solutionSpace(index,i);
-	}
-
-jointPositionj20[1] = 0;
-// calculate optimum jp and jp0
-//go to jp0
-// go to jp
-// grab
-//then go to jp0
-
-
-
+void sendData(std::ostringstream *osstring);
+void close_grasp();
+void open_grasp();
+void send_home();
+void sendData(std::ostringstream *osstring);
+void  socket(char *msg);
+void trapezoidal_close();
+void close_spread();
+void waitForEnter() {
+	std::string line;
+	std::getline(std::cin, line);
 }
-
 
 
 
@@ -176,17 +108,26 @@ cartesianAndOrientation[6] = initialDetails[6];
 cartesianAndOrientation[7] = initialDetails[7];
 cartesianAndOrientation[8] = initialDetails[8];
 
-std::cout << "  cartesian " << cartesianAndOrientation[0] << "   " << cartesianAndOrientation [1] <<"   "<<  cartesianAndOrientation[2] << std::endl;
-std::cout << "  4 to 6  " << cartesianAndOrientation[3] << "   " << cartesianAndOrientation [4] <<"   "<<  cartesianAndOrientation[5] << std::endl;
-std::cout << "  orien " << cartesianAndOrientation[6] << "   " << cartesianAndOrientation [7] <<"   "<<  cartesianAndOrientation[8] << std::endl;
+std::cout << "Calculating jp for  cartesian " << cartesianAndOrientation[0] << "   " << cartesianAndOrientation [1] <<"   "<<  cartesianAndOrientation[2] << std::endl;
+//std::cout << "  4 to 6  " << cartesianAndOrientation[3] << "   " << cartesianAndOrientation [4] <<"   "<<  cartesianAndOrientation[5] << std::endl;
+//std::cout << "  orien " << cartesianAndOrientation[6] << "   " << cartesianAndOrientation [7] <<"   "<<  cartesianAndOrientation[8] << std::endl;
 
 float phi_search[2];
 int solutionCounter[1];
 char fileName[100];
 	func_inverse_kine(cartesianAndOrientation,phi_search);
-std::cout <<" phi search " << phi_search[0] << phi_search[1] << std::endl;
+//std::cout <<" phi search " << phi_search[0] << phi_search[1] << std::endl;
 	func_multi_sol(cartesianAndOrientation,phi_search,solutionCounter,fileName);
 std::cout << "Solution counter " << *solutionCounter << fileName << std::endl;
+if(*solutionCounter==0)
+	{std::cout << "No solutions found" << std::endl;
+	waitForEnter();
+	open_grasp();
+	close_spread();
+	trapezoidal_close();
+	send_home();
+	}
+
 
 std::ifstream infile(fileName);
 MatrixXf solutionSpace (*solutionCounter,7);
@@ -220,13 +161,23 @@ int index = 0;
 for(i =0;i < *solutionCounter; i++)
 	{
 	//std::cout << i << "  " << solutionSpace(i,0) << " " << min << std::endl;
-	float dummy1 = solutionSpace(i,0);
+	float dummy0 = solutionSpace(i,0);
+	float dummy1 = solutionSpace(i,1);
 	float dummy2 = solutionSpace(i,2);
-	if(dummy1<0)
-		dummy1=-dummy1;
+	float dummy3 = solutionSpace(i,3);
+	float dummy4 = solutionSpace(i,4);
+	float dummy5 = solutionSpace(i,5);
+	float dummy6 = solutionSpace(i,6);
+
+
+	if(dummy0<0)
+		dummy0=-dummy0;
 	if(dummy2<0)
 		dummy2=-dummy2;
-	float dummy = dummy1 +dummy2;
+	if(dummy6<0)
+		dummy6=-dummy6;
+
+	float dummy = dummy0 +dummy2 + 0.4*dummy6;
 	if(dummy < min)
 		{
 		index = i;
@@ -247,11 +198,6 @@ jointPositionj20[1] = 0;
 
 }
 
-
-void waitForEnter() {
-	std::string line;
-	std::getline(std::cin, line);
-}
 
 
 // Client socket include files
@@ -317,8 +263,8 @@ void sendData(std::ostringstream *osstring)
 {
 	std::string	msg1 = (*osstring).str();
 	std::cout << msg1 << std::endl;
-//	socket(&msg1[0]);
-	//waitForEnter();
+socket(&msg1[0]);
+	waitForEnter();
 	(*osstring).clear();
 	(*osstring).str("");
 }
@@ -363,8 +309,107 @@ void send_home()
 	sendData(&ss);
 }
 
+bool isNear(float *firstXYZ, float *secondXYZ)
+{
+	Vector2f relativeXYZ;
+	relativeXYZ(0)=firstXYZ[0]-secondXYZ[0];
+	relativeXYZ(1)=firstXYZ[1]-secondXYZ[1];
+	//relativeXYZ(2)=firstXYZ[2]-secondXYZ[2];
+	if(relativeXYZ.norm() < thresholdNearDistance )
+	{
+		std::cout << " Relative Distance is " << relativeXYZ.norm()  << "Realtive vector is " <<relativeXYZ(0) << " " << relativeXYZ(1) <<  std::endl;
+		return true;
+
+	}
+	std::cout << " Relative Distance is " << relativeXYZ.norm()  << "Realtive vector is " <<relativeXYZ(0) << " " << relativeXYZ(1) << std::endl;
+	return false;
+}
+
+bool isNearRand(float *firstXYZ, float *secondXYZ)
+{
+	Vector2f relativeXYZ;
+	relativeXYZ(0)=firstXYZ[0]-secondXYZ[0];
+	relativeXYZ(1)=firstXYZ[1]-secondXYZ[1];
+	//relativeXYZ(2)=firstXYZ[2]-secondXYZ[2];
+	if(relativeXYZ.norm() < thresholdNearDistance )
+	{
+	//	std::cout << " Relative Distance is " << relativeXYZ.norm()  << "Realtive vector is " <<relativeXYZ(0) << " " << relativeXYZ(1) <<  std::endl;
+		return true;
+
+	}
+	// std::cout << " Relative Distance is " << relativeXYZ.norm()  << "Realtive vector is " <<relativeXYZ(0) << " " << relativeXYZ(1) << std::endl;
+	return false;
+}
+
+
+bool isObjectAt(float *finalXYZ, std::vector <int> objectId,MatrixXf observationMatrix, int *targetObject)
+{
+	int alpha;
+	float alphaXYZ[3];
+		for(alpha=0;alpha<objectId.size(); alpha++)
+		{
+
+			alphaXYZ[0]=observationMatrix(alpha,1);
+			alphaXYZ[1]=observationMatrix(alpha,2);
+			alphaXYZ[2]=observationMatrix(alpha,3);
+			if(isNear(finalXYZ,alphaXYZ))
+				{
+				*targetObject = alpha;
+				return true;
+				}
+				;
+		}
+
+return false;
+}
+
+bool isObjectAtRand(float *finalXYZ, std::vector <int> objectId,MatrixXf observationMatrix, int *targetObject)
+{
+	int alpha;
+	float alphaXYZ[3];
+		for(alpha=0;alpha<objectId.size(); alpha++)
+		{
+
+			alphaXYZ[0]=observationMatrix(alpha,1);
+			alphaXYZ[1]=observationMatrix(alpha,2);
+			alphaXYZ[2]=observationMatrix(alpha,3);
+			if(isNearRand(finalXYZ,alphaXYZ))
+				{
+				*targetObject = alpha;
+				return true;
+				}
+				;
+		}
+
+return false;
+}
+bool isAnotherObjectAt(float *finalXYZ, std::vector <int> objectId,MatrixXf observationMatrix, int *targetObject, int currentId)
+{
+	int alpha;
+	float alphaXYZ[3];
+		for(alpha=0;alpha<objectId.size(); alpha++)
+		{
+			std::cout << currentId << "  " << alpha <<  std::endl;
+			if(alpha == currentId)
+				continue;
+			alphaXYZ[0]=observationMatrix(alpha,1);
+			alphaXYZ[1]=observationMatrix(alpha,2);
+			alphaXYZ[2]=observationMatrix(alpha,3);
+
+			if(isNear(finalXYZ,alphaXYZ))
+				{
+				*targetObject = alpha;
+				return true;
+				}
+				;
+		}
+
+return false;
+}
+
 void goToJointPosition(float *jointPosition)
 {
+
 	std::ostringstream ss;
 	ss<<  "j " << jointPosition[0] << " " << jointPosition[1] << " " << jointPosition[2] << " " << jointPosition[3] << " " << jointPosition[4] << " " << jointPosition[5] << " " << jointPosition[6];
 	sendData(&ss);
@@ -381,15 +426,94 @@ int locationOfId(int targetObjectId,std::vector <int> objectId)
 
 }
 
-void pick_and_place (float *currentDetails, float *finalDetails)
+void createDummyPositon(float *dummyXYZ, std::vector <int> objectId,MatrixXf observationMatrix, int *targetObject)
+{	int seed = 1;
+	float r = ((float) rand()/ RAND_MAX) ;
+	float min_x = 0.41;
+	float max_x = 0.65;
+	float min_y = -0.25;
+	float max_y = 0.38;
+	dummyXYZ[0]= min_x + (max_x - min_x) * r;
+	dummyXYZ[1]= min_y+ (max_y - min_y) * r;
+	dummyXYZ[2]= -0.35;
+	int i;
+	while(isObjectAtRand(dummyXYZ,objectId,observationMatrix,targetObject))
+	{
+		srand(time(NULL) + seed);
+		 r = ((float) rand()/ RAND_MAX);
+
+	dummyXYZ[0]= min_x + (max_x - min_x) * r;
+	dummyXYZ[1]= min_y+ (max_y - min_y) * r;
+	dummyXYZ[2]= -0.35;
+	seed = seed + 1000;
+	i++;
+	}
+	 std::cout << "Random no. is " << r  << " total no. of loops is "<< i << std::endl;
+	// make sure no object is at dummy XYZ using isObjectAt
+//put dummXYZ in the array
+	//dummyXYZ[0];
+}
+
+void updateObservationMatrix(MatrixXf& observationMatrix, int objectid, float *finalOutput)
+{
+
+	observationMatrix(objectid,1)= finalOutput[0];
+	observationMatrix(objectid,2)= finalOutput[1];
+	observationMatrix(objectid,3)= finalOutput[2] - zOffset;
+	observationMatrix(objectid,4)= atan2(finalOutput[7],finalOutput[6]) * (180/PI) - 90;
+
+}
+void createFinalVector(float *finalXYZ, float angle, float *output)
+{
+	if(angle<0)
+			angle = -angle;
+	angle = int(angle)%180;
+	output[0]= finalXYZ[0];
+	output[1]= finalXYZ[1];
+	output[2]= finalXYZ[2] + zOffset;
+	output[3]= 0;
+	output[4]= 0;
+	output[5]= -1;
+	output[6]= cos((angle)*PI/180);
+	output[7]= sin((angle)*PI/180);
+	output[8]= 0;
+}
+
+void pick_and_place (float *currentDetails, float *finalDetails,std::vector <int> objectId,MatrixXf& observationMatrix,int currentId)
 {
 	float currentJp[9];
 	float currentJpJ20[9];
 	float finalJp[9];
 	float finalJpJ20[9];
+	int obstacleObjectId[1];
+	int flag = 1;
+	std::cout << " " <<isAnotherObjectAt(finalDetails,objectId,observationMatrix,obstacleObjectId,currentId)<< std::endl;
+	while(isAnotherObjectAt(finalDetails,objectId,observationMatrix,obstacleObjectId,locationOfId(currentId,objectId)))
+		{
+		std::cout << " Obstacle fount with id " <<  obstacleObjectId[0] <<" "<< objectId[obstacleObjectId[0]]  << std::endl;
+		int obstacleId= *obstacleObjectId;
+		float obstacleXYZ[3];
+		obstacleXYZ[0]=observationMatrix(obstacleObjectId[0],1);
+		obstacleXYZ[1]=observationMatrix(obstacleObjectId[0],2);
+		obstacleXYZ[2]=observationMatrix(obstacleObjectId[0],3);
+		float obstacleAngle;
+		float obstacleDetails[9];
+		createFinalVector(obstacleXYZ,obstacleAngle,obstacleDetails);
+		float dummyXYZ[3];
+		float dummyDetails[9];
+		createDummyPositon(dummyXYZ,objectId,observationMatrix,obstacleObjectId);
+		// create Dummy position
+		std::cout << "Putting it at dummy XYZ " << dummyXYZ[0]<< " " << dummyXYZ[1]<<  std::endl;
+		createFinalVector(dummyXYZ,obstacleAngle,dummyDetails);
+		pick_and_place(obstacleDetails,dummyDetails,objectId,observationMatrix,objectId[obstacleId]);
+		// then put obstacle in the dummy XYZ
 
+		}
 	calculateJpForPickAndPlace(currentDetails,currentJp,currentJpJ20);
+	std::cout << "JP calculated for grasping" << std::endl;
 	goToJointPosition(currentJpJ20);
+	std::cout << "initialise hand" << std::endl;
+
 	initialise_hand();
 	goToJointPosition(currentJp);
 	close_grasp();
@@ -403,33 +527,14 @@ void pick_and_place (float *currentDetails, float *finalDetails)
 
 	open_grasp();//close_grasp();
 	goToJointPosition(finalJpJ20);
-//	close_spread();
+	updateObservationMatrix(observationMatrix,locationOfId(currentId,objectId),finalDetails);
+	std::cout << "updated matrix" << std::endl << observationMatrix << std::endl;
+	//	close_spread();
 //	trapezoidal_close();
 //	send_home();
 }
 
-void updateObservationMatrix(MatrixXf& observationMatrix, int objectid, float *finalOutput)
-{
 
-	observationMatrix(objectid,1)= finalOutput[0];
-	observationMatrix(objectid,2)= finalOutput[1];
-	observationMatrix(objectid,3)= finalOutput[2];
-	observationMatrix(objectid,4)= atan2(finalOutput[7],finalOutput[6]) * (180/PI) - 90;
-
-}
-void createFinalVector(float *finalXYZ, float angle, float *output)
-{
-
-	output[0]= finalXYZ[0];
-	output[1]= finalXYZ[1];
-	output[2]= finalXYZ[2] + 0.13;
-	output[3]= 0;
-	output[4]= 0;
-	output[5]= -1;
-	output[6]= cos((angle+90)*PI/180);
-	output[7]= sin((angle+90)*PI/180);
-	output[8]= 0;
-}
 
      using namespace std;
      using namespace Eigen;
@@ -481,9 +586,8 @@ void createFinalVector(float *finalXYZ, float angle, float *output)
     	    	 std::cout << "Error in line loop";
     	    	 break;
     	     	} // error
-    	     	//std::cout << a << " " << b << " " << c <<std::endl;
-    	     // process pair (a,b)
     	     std::cout << "And id is " << id << "  " <<iss.str() << std::endl;
+
 
     	     iss.str().c_str();
     	     std::string msgStr = iss.str();
@@ -492,33 +596,31 @@ void createFinalVector(float *finalXYZ, float angle, float *output)
     	     strcpy(msg, (iss.str()).c_str());
     	     //char *msg = &(iss.str())[0];
     	    std::cout << "command is "<<msg << std::endl;
+			 std::cout << observationMatrix << std::endl;
 
     	      std::stringstream ss1(msgStr.substr(6));
-//    	      std::cout << "hell broke lose here " <<  ss1.str() << std::endl;
-//         std::cout<<"msg= "<< msg<< std::endl;
-//    	      std::cout << msg[0] << msg[1] << msg[5] <<std::endl;
+//
     	      if(msg[3]=='P' && msg[4]=='A' && msg[5]=='C')
     	      {
-    	    //	 std::cout << msg[3] << std::endl;
+
     	    	 float finalXYZ[3];
-//    	    	 std::cout << "check out" << std::endl ;
+//
 
     	    	 ss1>> finalXYZ[0]  >> finalXYZ[1];
-    	    	 finalXYZ[2] = 0;
+    	    	 finalXYZ[2] = observationMatrix(locationOfId(id,objectId),3);
     	    	 float currentXYZ[3];
-    	    	// std::cout << "check out " << locationOfId(id,objectId)  << std::endl ;
     	    	 currentXYZ[0]=observationMatrix(locationOfId(id,objectId),1);
     	    	 currentXYZ[1]=observationMatrix(locationOfId(id,objectId),2);
     	    	 currentXYZ[2]=observationMatrix(locationOfId(id,objectId),3);
-    	    	 //std::cout << "check out" << std::endl ;
 
     	    	 float angle =observationMatrix(locationOfId(id,objectId),4) ;
     	    	 float currentOutput[9];
     	    	 float finalOutput[9];
     	    	 createFinalVector(finalXYZ,angle,finalOutput);
     	    	 createFinalVector(currentXYZ,angle,currentOutput);
-    	    	 pick_and_place(currentOutput,finalOutput);
-    	    	 updateObservationMatrix(observationMatrix,locationOfId(id,objectId),finalOutput);
+    	    	 //pick_and_place(currentOutput,finalOutput);
+    	    	 pick_and_place(currentOutput,finalOutput,objectId,observationMatrix,id);
+    	    	// updateObservationMatrix(observationMatrix,locationOfId(id,objectId),finalOutput);
     	    	 //    	    	 std::cout << finalXYZ[0];
 //    	    	float *finalXYZ ={} ;
     	      // pick and place
@@ -535,8 +637,12 @@ void createFinalVector(float *finalXYZ, float angle, float *output)
 					 relativeXYZ[2] = 0;
 					 float finalXYZ[3];
 					 finalXYZ[0] = observationMatrix(locationOfId(targetId,objectId),1) + relativeXYZ[0];
-					 finalXYZ[0] = observationMatrix(locationOfId(targetId,objectId),2) + relativeXYZ[1];
-					 finalXYZ[0] = observationMatrix(locationOfId(targetId,objectId),3) + relativeXYZ[2];
+					 finalXYZ[1] = observationMatrix(locationOfId(targetId,objectId),2) + relativeXYZ[1];
+					 std::cout << observationMatrix(locationOfId(targetId,objectId),3) <<std::endl;
+//					 std::cout << "hello ";
+//					 std::cout << observationMatrix << std::endl;
+					 finalXYZ[2] = observationMatrix(locationOfId(targetId,objectId),3) + relativeXYZ[2];
+					 std::cout << finalXYZ[2];
 					 float currentXYZ[3];
 					 currentXYZ[0]=observationMatrix(locationOfId(id,objectId),1);
 					 currentXYZ[1]=observationMatrix(locationOfId(id,objectId),2);
@@ -546,8 +652,9 @@ void createFinalVector(float *finalXYZ, float angle, float *output)
 					 float finalOutput[9];
 					 createFinalVector(finalXYZ,angle,finalOutput);
 					 createFinalVector(currentXYZ,angle,currentOutput);
-					 pick_and_place(currentOutput,finalOutput);
-	    	    	 updateObservationMatrix(observationMatrix,locationOfId(id,objectId),finalOutput);
+					 //pick_and_place(currentOutput,finalOutput);
+					 pick_and_place(currentOutput,finalOutput,objectId,observationMatrix,id);
+	    	    	 //updateObservationMatrix(observationMatrix,locationOfId(id,objectId),finalOutput);
 	  //    	    	 std::cout << finalXYZ[0];
 	  //    	    	float *finalXYZ ={} ;
 				  // pick and place with respect to targetId
@@ -570,8 +677,9 @@ void createFinalVector(float *finalXYZ, float angle, float *output)
 					 float finalOutput[9];
 					 createFinalVector(currentXYZ,targetAngle,finalOutput);
 					 createFinalVector(currentXYZ,angle,currentOutput);
-					 pick_and_place(currentOutput,finalOutput);
-	    	    	 updateObservationMatrix(observationMatrix,locationOfId(id,objectId),finalOutput);
+					// pick_and_place(currentOutput,finalOutput);
+					 pick_and_place(currentOutput,finalOutput,objectId,observationMatrix,id);
+	    	    //	 updateObservationMatrix(observationMatrix,locationOfId(id,objectId),finalOutput);
 
 
 	  //    	    	 std::cout << finalXYZ[0];
@@ -579,6 +687,7 @@ void createFinalVector(float *finalXYZ, float angle, float *output)
 				  // change the angle
 
 				  }
+
     	 }
 
 

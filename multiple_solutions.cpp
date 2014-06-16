@@ -424,7 +424,7 @@ for(int i = 0; i < sol_counter; i++)
 //	cout << final_joint_angles << " " << endl;
 	cout << final_joint_sol << " " << endl;
 
-	char tmpFile[] = "./data/jpXXXXXX";
+	char tmpFile[] = "./data/temp_data/jpXXXXXX";
 		if (mkstemp(tmpFile) == -1) {
 			std::cout << "ERROR: Couldn't create temporary file!\n" << std::endl ;
 
@@ -443,7 +443,7 @@ for(int i = 0; i < sol_counter; i++)
 
 // cout << "exmaple " << int(10.3) << endl;
 
-	  cout << "Calculated jopint POsitions"  << endl;
+	  cout << "Calculated jopint Positions"  << endl;
 
 }
 
