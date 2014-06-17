@@ -408,7 +408,7 @@ for(int i = 0; i < sol_counter; i++)
 //	  file_joint_positions.close();
 	  solutionCounter[0] = sol_counter;
 
-		char tmpFile[] = "/home/niladri-64/module_heisenberg/data/jpXXXXXX";
+		char tmpFile[] = "/home/niladri-64/module_heisenberg/data/temp_data/jpXXXXXX";
 			if (mkstemp(tmpFile) == -1) {
 				std::cout << "ERROR: Couldn't create temporary file!\n" << std::endl ;
 

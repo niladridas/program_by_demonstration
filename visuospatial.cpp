@@ -18,7 +18,7 @@ using namespace Eigen;
 
 float thresholdDistanceChange = 0.1;
 float thresholdHeightChange = 0.30;
-float thresholdAngleChange = 25;
+float thresholdAngleChange = 60;
 float thresholdRelativeDistanceChange = 0.25;
 //typedef int demo_num ;
 
