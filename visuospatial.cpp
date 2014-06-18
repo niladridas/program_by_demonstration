@@ -39,12 +39,20 @@ void displayVect4times(std::vector< std::vector< std::vector< std::vector<float>
 
 bool isPositionChanged (int timeStamp, MatrixXf obsMatrix , float *distanceChange)
 {
-	float prev_x = obsMatrix(timeStamp-1,0) , prev_y= obsMatrix(timeStamp-1,1), prev_z = obsMatrix(timeStamp-1,2);
-	float x = obsMatrix(timeStamp,0),y= obsMatrix(timeStamp,1),z = obsMatrix(timeStamp,2) ;
+
+	int lastTime= timeStamp-1;
+	for(;lastTime>=0;lastTime--)
+		if(isVisible(lastTime,obsMatrix))
+			break;
+	if(lastTime==-1)
+			return false;
+	float prev_x = obsMatrix(lastTime,0) , prev_y= obsMatrix(lastTime,1), prev_z = obsMatrix(lastTime,2);
+		float x = obsMatrix(timeStamp,0),y= obsMatrix(timeStamp,1),z = obsMatrix(timeStamp,2) ;
 
 	Vector3f prev_loc ;
 	Vector3f cur_loc ;
 	Vector3f diff_loc;
+
 	prev_loc(0) = prev_x;prev_loc(1) = prev_y; prev_loc(2) = prev_z;
 	cur_loc(0) = x; cur_loc(1) = y; cur_loc(2) = z ;
 	diff_loc = cur_loc - prev_loc;
@@ -58,6 +66,13 @@ bool isPositionChanged (int timeStamp, MatrixXf obsMatrix , float *distanceChang
 
 bool isAngleChanged (int timeStamp, MatrixXf obsMatrix , float *angleChange)
 {
+	int lastTime= timeStamp-1;
+		for(;lastTime>=0;lastTime--)
+			if(isVisible(lastTime,obsMatrix))
+				break;
+		if(lastTime==-1)
+				return false;
+
 	float prev_orien = obsMatrix(timeStamp-1,3);
 	float curr_orien = obsMatrix(timeStamp,3);
 
@@ -111,30 +126,46 @@ float relativeDistanceMod (int timeStamp, int objectIndex,  int targetObject, st
 {
 	float obj1_x = observationVector[objectIndex](timeStamp,0) , obj1_y=observationVector[objectIndex](timeStamp,1), obj1_z = observationVector[objectIndex](timeStamp,2);
 int lastVisibleTimeStamp = timeStamp;
+
 float changedHeight[1];
 std::cout <<" is visible for "<< objectIndex << " "<<targetObject<< " is "
 		<< !isVisible(lastVisibleTimeStamp,observationVector[targetObject]) << std::endl;
-
-while(isHeightChanged(timeStamp,observationVector[objectIndex],changedHeight)
-		&&!isVisible(lastVisibleTimeStamp,observationVector[targetObject]))
-	{
-	std::cout << "changing time stamp" << std::endl;
+if(targetObject==objectIndex)
+		{
+		std::cout << "changing time stamp" << std::endl;
 		lastVisibleTimeStamp--;
 		heightChanged[0] = 1;
-	}
+		}
+else
+{
+		while(isHeightChanged(timeStamp,observationVector[objectIndex],changedHeight)
+				&&!isVisible(lastVisibleTimeStamp,observationVector[targetObject]))
+			{
+			std::cout << "changing time stamp" << std::endl;
+				lastVisibleTimeStamp--;
+				heightChanged[0] = 1;
+				if(lastVisibleTimeStamp==-1)
+					break;
+			}
+
+}
+
 std::cout <<" is height changed for "<< objectIndex << " "<<isHeightChanged(timeStamp,observationVector[objectIndex],changedHeight)
 		<< " is "  << heightChanged[0] << std::endl;
 lastTimeStamp[0] = lastVisibleTimeStamp;
 //		if(isHeightChanged(timeStamp,observationVector[objectIndex],heightChanged) )
 	//		obj1_z
+if(lastVisibleTimeStamp==-1)
+		return 9999;
+
 		float obj2_x = observationVector[targetObject](lastVisibleTimeStamp,0) , obj2_y= observationVector[targetObject](lastVisibleTimeStamp,1) ,obj2_z = observationVector[targetObject](lastVisibleTimeStamp,2) ;
 
 
 		Vector3f prev_loc ;
 		Vector3f cur_loc ;
 		Vector3f diff_loc;
-		prev_loc(0) = obj1_x;prev_loc(1) = obj1_y; prev_loc(2) = obj1_z;
-		cur_loc(0) = obj2_x; cur_loc(1) = obj2_y; cur_loc(2) = obj2_z ;
+		prev_loc(0) = obj1_x;prev_loc(1) = obj1_y; prev_loc(2) =0; //obj1_z;
+		cur_loc(0) = obj2_x; cur_loc(1) = obj2_y; cur_loc(2) = 0;//obj2_z ;
 		diff_loc = cur_loc - prev_loc;
 
 		float relativeD = diff_loc.norm();
@@ -151,10 +182,13 @@ bool minimumInterDistance(int timeStamp, int objectIndex, std::vector<  MatrixXf
 	float minrelDistance =9999999999;
 	int minIndex = -1;
 	float relDistance;
+	float changedHeight[1];
 	for (i=0;i<totalObjects;i++)
 		{
-		if (i==objectIndex)
+		if (i==objectIndex&&!isHeightChanged(timeStamp,observationVector[objectIndex],changedHeight))
 				continue;
+		if(isVisible(timeStamp,observationVector[i])&& isVisibilityChanged(timeStamp,observationVector[i]))
+			continue;
 		relDistance = relativeDistanceMod(timeStamp,objectIndex,i,observationVector,tempheightChanged,templstVisibleTimeStamp);
 		if(relDistance < minrelDistance)
 			{
@@ -320,13 +354,16 @@ for(i=0;i<observationVector.size();i++)
 				float positionChanged[1],angleChanged[1],  relativeDistance[1];
 				int targetObject[1],heightChanged[1],lastVisibleTimeStamp[1];
 
+				if(!isPositionChanged(a2,observationVector[a3],positionChanged))
+					std::cout << objectId[a3] << " position was not changed " << std::endl;
 				if (isPositionChanged(a2,observationVector[a3],positionChanged))
 							{
 
-					inference_matrix[a1][a2][0][0] = objectId[a3];
-
+								inference_matrix[a1][a2][0][0] = objectId[a3];
+								std::cout << "object id on which pos . event ocurred is  " << inference_matrix[a1][a2][0][0] << " a2 time is "<< a2 << std::endl;
 								k = 	minimumInterDistance(a2,a3, observationVector,targetObject, relativeDistance,heightChanged,lastVisibleTimeStamp);
 								std::cout << "Distance of "<< objectId[a3]<< "changed by " << *relativeDistance <<" w.r.to "<<objectId[*targetObject]  << std::endl;
+								std::cout << "object id on which pos . event ocurred is  " << inference_matrix[a1][a2][0][0] << " and k is "<< k<<std::endl;
 								if(k)
 								{
 

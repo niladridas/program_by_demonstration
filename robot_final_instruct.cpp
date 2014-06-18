@@ -116,7 +116,7 @@ void close_spread();
 void trapezoidal_init();
 void goToJointPosition(float *jointPosition);
 void waitForEnter();
-void calculateJpForPickAndPlace(float *initialDetails, float *jointPositionFinal,float *intermediateJointPosition,float *jointPositionj20);
+void calculateJpForPickAndPlace(float *initialDetails,float *currentJointPosition, float *jointPositionFinal,float *intermediateJointPosition,float *jointPositionj20);
 bool isNear(float *firstXYZ, float *secondXYZ) ;//This function returns if the 2 given cartesian points are near or not.
 bool isNearRand(float *firstXYZ, float *secondXYZ) ;
 bool isObjectAt(float *finalXYZ, std::vector <int> objectId,MatrixXf observationMatrix, int *targetObjectPID);
@@ -126,7 +126,7 @@ int locationOfId(int targetObjectMarkerId,std::vector <int> objectId);
 void createDummyPositon(float *dummyXYZ, std::vector <int> objectId,MatrixXf observationMatrix, int *targetObjectPID);
 void updateObservationMatrix(MatrixXf& observationMatrix, int objectid, float *finalOutput);
 void createFinalVector(float *finalXYZ, float angle, float *output);
-void pick_and_place (float *currentDetails, float *finalDetails,std::vector <int> objectId,MatrixXf& observationMatrix,int currentMarkerId);
+void pick_and_place (float *currentDetails, float *finalDetails,std::vector <int> objectId,MatrixXf& observationMatrix,int currentMarkerId,float *currentJointPosition);
 
 
 
@@ -137,8 +137,19 @@ void waitForEnter() {
 }
 
 
+void updateCurrentJointPosition(float *prevJointPosition, float *finalPosition)
+{
+	prevJointPosition[0]=	finalPosition[0];
+	prevJointPosition[1]=	finalPosition[1];
+	prevJointPosition[2]=	finalPosition[2];
+	prevJointPosition[3]=	finalPosition[3];
+	prevJointPosition[4]=	finalPosition[4];
+	prevJointPosition[5]=	finalPosition[5];
+	prevJointPosition[6]=	finalPosition[6];
 
-void calculateJpForPickAndPlace(float *initialDetails, float *jointPositionFinal,float *intermediateJointPosition,float *jointPositionj20)
+}
+
+void calculateJpForPickAndPlace(float *initialDetails,float *currentJointPosition, float *jointPositionFinal,float *intermediateJointPosition,float *jointPositionj20)
 {
 
 float  cartesianAndOrientation[9];
@@ -257,6 +268,8 @@ while (std::getline(infileIntermediate, lineIntermediate))
 float min = 99999999999;
 float dummy0,dummy1,dummy2,dummy3,dummy4,dummy5,dummy6;
 int index = 0;
+float error1,error2,error3,error4,error5,error6,error0;
+float min_error=99999,curr_error;
 for(i =0;i < *solutionCounter1; i++)
 	{
 	//std::cout << i << "  " << solutionSpace(i,0) << " " << min << std::endl;
@@ -268,23 +281,49 @@ for(i =0;i < *solutionCounter1; i++)
 	 dummy5 = solutionSpace(i,5);
 	 dummy6 = solutionSpace(i,6);
 
+    error0 = dummy0- currentJointPosition[0];
+	 error1 = dummy1- currentJointPosition[1];
+	 error2 = dummy2- currentJointPosition[2];
+	 error3 = dummy3- currentJointPosition[3];
+	 error4 = dummy4- currentJointPosition[4];
+	 error5 = dummy5- currentJointPosition[5];
+	 error6 = dummy6- currentJointPosition[6];
 
-	if(dummy0<0)
-		dummy0=-dummy0;
-	if(dummy2<0)
-		dummy2=-dummy2;
-	if(dummy4<0)
-		dummy4=-dummy4;
+	 if(error0<0)
+		 error0=-error0;
+	 if(error1<0)
+		 error1=-error1;
+	 if(error2<0)
+		 error2=-error2;
+	 if(error3<0)
+		 error3=-error3;
+	 if(error4<0)
+		 error4=-error4;
+	 if(error5<0)
+		 error5=-error5;
+	 if(error6<0)
+		 error6=-error6;
 
-	float dummy = 0.4*dummy0 +dummy2 ; //+ 0.4*dummy6;
-	if(dummy < min)
-		{
-		index = i;
-		min = dummy;
-		}
+	 curr_error = 0.3*error0 + error4 + 0.3*error2 + error6 ;//error3+error4+error5+error6;
+	 //	 std::cout << "curr_error " << curr_error<< "and i = " << i << " " << error4 << " " << error6<< std::endl;
+	 	 if(curr_error < min_error)
+	 		 {
+	 //		 std::cout << "curr_error " << curr_error<< "and i = " << i << std::endl;
+	 //		std::cout<< "---------------" << error0 << " " << error2 << " " << error6 <<	 std::endl;
+
+	 		 index= i;
+	 			 min_error = curr_error;
+	 		 }
+//	float dummy = 0.4*dummy0 +dummy2 ; //+ 0.4*dummy6;
+//	if(dummy < min)
+//		{
+//		index = i;
+//		min = dummy;
+//		}
 	}
 
 std::cout << "index = " << index << std::endl;
+
 
 
 for(i=0;i<7;i++)
@@ -294,8 +333,8 @@ for(i=0;i<7;i++)
 	}
 
 jointPositionj20[1] = 0;
-float error1,error2,error3,error4,error5,error6,error0;
-float min_error=99999,curr_error;
+
+min_error=99999;
 int indexIntermediate;
 for(i =0;i < *solutionCounter2; i++)
 	{
@@ -415,7 +454,7 @@ void sendData(std::ostringstream *osstring) // It sends the data via socket to R
 {
 	std::string	msg1 = (*osstring).str();
 	std::cout << msg1 << std::endl;
-socket(&msg1[0]);
+	socket(&msg1[0]);
 	waitForEnter();
 	(*osstring).clear();
 	(*osstring).str("");
@@ -467,7 +506,7 @@ void trapezoidal_init()
 {
 
 	std::ostringstream ss;
-	ss << "m 43" ;
+	ss << "m 40" ;
 	sendData(&ss);
 }
 void goToJointPosition(float *jointPosition)
@@ -642,8 +681,7 @@ void updateObservationMatrix(MatrixXf& observationMatrix, int objectid, float *f
 }
 void createFinalVector(float *finalXYZ, float angle, float *output)
 {
-	if(angle <0)
-		angle=-angle;
+	//if(angle <0)
 //	if(angle<0)
 //			angle = -angle;
 //	float dum1 = angle;
@@ -672,7 +710,7 @@ void createFinalVector(float *finalXYZ, float angle, float *output)
 	output[8]= 0;
 }
 
-void pick_and_place (float *currentDetails, float *finalDetails,std::vector <int> objectId,MatrixXf& observationMatrix,int currentMarkerId)
+void pick_and_place (float *currentDetails, float *finalDetails,std::vector <int> objectId,MatrixXf& observationMatrix,int currentMarkerId,float *currentJointPosition)
 {
 	float currentJp[7];
 	float currentIntermediateJointPosition[7];
@@ -699,34 +737,49 @@ void pick_and_place (float *currentDetails, float *finalDetails,std::vector <int
 		// create Dummy position
 		std::cout << "Putting it at dummy XYZ " << dummyXYZ[0]<< " " << dummyXYZ[1]<<  std::endl;
 		createFinalVector(dummyXYZ,obstacleAngle,dummyDetails);
-		pick_and_place(obstacleDetails,dummyDetails,objectId,observationMatrix,objectId[obstaclePID]);
+		pick_and_place(obstacleDetails,dummyDetails,objectId,observationMatrix,objectId[obstaclePID],currentJointPosition);
 		// then put obstacle in the dummy XYZ
 
 		}
 
 	std::cout << " calculating JP for grasping" << std::endl;
 
-	calculateJpForPickAndPlace(currentDetails,currentJp,currentIntermediateJointPosition,currentJpJ20);	goToJointPosition(currentJpJ20);
-//	std::cout << "initialise hand" << std::endl;
+	calculateJpForPickAndPlace(currentDetails,currentJointPosition,currentJp,currentIntermediateJointPosition,currentJpJ20);
+	goToJointPosition(currentJpJ20);
+	updateCurrentJointPosition(currentJointPosition,currentJpJ20);
+	//	std::cout << "initialise hand" << std::endl;
 //
 	initialise_hand();
 	trapezoidal_init();
 	goToJointPosition(currentIntermediateJointPosition);
+
+	updateCurrentJointPosition(currentJointPosition,currentIntermediateJointPosition);
+
 	goToJointPosition(currentJp);
+	updateCurrentJointPosition(currentJointPosition,currentJp);
 	close_grasp();
 	goToJointPosition(currentIntermediateJointPosition);
+	updateCurrentJointPosition(currentJointPosition,currentIntermediateJointPosition);
 	goToJointPosition(currentJpJ20);
+	updateCurrentJointPosition(currentJointPosition,currentJpJ20);
 
-	calculateJpForPickAndPlace(finalDetails,finalJp,finalIntermediateJointPosition,finalJpJ20);
+
+	//_____________________________________________
+
+	calculateJpForPickAndPlace(finalDetails,currentJointPosition,finalJp,finalIntermediateJointPosition,finalJpJ20);
 	goToJointPosition(finalJpJ20);
+	updateCurrentJointPosition(currentJointPosition,finalJpJ20);
 	//initialise_hand();
 	goToJointPosition(finalIntermediateJointPosition);
+	updateCurrentJointPosition(currentJointPosition,finalIntermediateJointPosition);
 	goToJointPosition(finalJp);
-
+	updateCurrentJointPosition(currentJointPosition,finalJp);
 	trapezoidal_init();
 	//close_grasp();
 	goToJointPosition(finalIntermediateJointPosition);
+	updateCurrentJointPosition(currentJointPosition,finalIntermediateJointPosition);
 	goToJointPosition(finalJpJ20);
+	updateCurrentJointPosition(currentJointPosition,finalJpJ20);
 	open_grasp();
 	updateObservationMatrix(observationMatrix,locationOfId(currentMarkerId,objectId),finalDetails);
 	std::cout << "updated matrix" << std::endl << observationMatrix << std::endl;
@@ -741,6 +794,9 @@ void pick_and_place (float *currentDetails, float *finalDetails,std::vector <int
      using namespace Eigen;
      int main()
      {
+    	 float currentJointPosition[7] = {0.00076699, -1.97339, -0.0280971, 3.17994, 0.0176329, -0.0286238, -0.0207545 };
+
+
     		std::vector <int> objectId ;
 
     	 MatrixXf observationMatrix (8,5);
@@ -820,7 +876,7 @@ void pick_and_place (float *currentDetails, float *finalDetails,std::vector <int
     	    	 createFinalVector(finalXYZ,angle,finalOutput);
     	    	 createFinalVector(currentXYZ,angle,currentOutput);
     	    	 //pick_and_place(currentOutput,finalOutput);
-    	    	 pick_and_place(currentOutput,finalOutput,objectId,observationMatrix,id);
+    	    	 pick_and_place(currentOutput,finalOutput,objectId,observationMatrix,id,currentJointPosition);
     	    	// updateObservationMatrix(observationMatrix,locationOfId(id,objectId),finalOutput);
     	    	 //    	    	 std::cout << finalXYZ[0];
 //    	    	float *finalXYZ ={} ;
@@ -855,7 +911,7 @@ void pick_and_place (float *currentDetails, float *finalDetails,std::vector <int
 					 createFinalVector(finalXYZ,angle,finalOutput);
 					 createFinalVector(currentXYZ,angle,currentOutput);
 					 //pick_and_place(currentOutput,finalOutput);
-					 pick_and_place(currentOutput,finalOutput,objectId,observationMatrix,id);
+					 pick_and_place(currentOutput,finalOutput,objectId,observationMatrix,id,currentJointPosition);
 	    	    	 //updateObservationMatrix(observationMatrix,locationOfId(id,objectId),finalOutput);
 	  //    	    	 std::cout << finalXYZ[0];
 	  //    	    	float *finalXYZ ={} ;
@@ -881,7 +937,7 @@ void pick_and_place (float *currentDetails, float *finalDetails,std::vector <int
 
 					 createFinalVector(currentXYZ,targetAngle,finalOutput);
 					 // pick_and_place(currentOutput,finalOutput);
-					 pick_and_place(currentOutput,finalOutput,objectId,observationMatrix,id);
+					 pick_and_place(currentOutput,finalOutput,objectId,observationMatrix,id,currentJointPosition);
 	    	    //	 updateObservationMatrix(observationMatrix,locationOfId(id,objectId),finalOutput);
 
 
