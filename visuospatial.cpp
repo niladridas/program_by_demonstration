@@ -17,10 +17,25 @@ using namespace std;
 using namespace Eigen;
 
 float thresholdDistanceChange = 0.1;
-float thresholdHeightChange = 0.30;
+float thresholdHeightChange = 0.07;
 float thresholdAngleChange = 60;
 float thresholdRelativeDistanceChange = 0.25;
+float heightNoise = 0.00;
 //typedef int demo_num ;
+
+bool isPositionChanged (int timeStamp, MatrixXf obsMatrix , float *distanceChange);
+bool isAngleChanged (int timeStamp, MatrixXf obsMatrix , float *angleChange);
+bool isVisible(int timeStamp, MatrixXf obsMatrix );
+bool isVisibilityChanged(int timeStamp,MatrixXf obsMatrix );
+bool isHeightChanged (int timeStamp,MatrixXf obsMatrix, float *heightChanged );
+float relativeDistanceMod (int timeStamp, int objectIndex,  int targetObject, std::vector<  MatrixXf > observationVector, int *heightChanged,int *lastTimeStamp);
+bool minimumInterDistance(int timeStamp, int objectIndex, std::vector<  MatrixXf > observationVector, int *targetObject, float *relativeDistance, int *heightChanged, int *lastVisibleTimeStamp);
+int locationOfId(int targetObjectId,std::vector <int> objectId);
+void displayVect4times(std::vector< std::vector< std::vector< std::vector<float> >  > > vect);
+
+
+
+
 
 bool isPositionChanged (int timeStamp, MatrixXf obsMatrix , float *distanceChange)
 {
@@ -62,9 +77,9 @@ bool isVisible(int timeStamp, MatrixXf obsMatrix )
 
 {
 	if(obsMatrix (timeStamp,0)==0 && obsMatrix (timeStamp,1)==0 && obsMatrix (timeStamp,2)==0 && obsMatrix (timeStamp,3)==0)
-		return true;
-	else
 		return false;
+	else
+		return true;
 }
 
 bool isVisibilityChanged(int timeStamp,MatrixXf obsMatrix )
@@ -72,15 +87,19 @@ bool isVisibilityChanged(int timeStamp,MatrixXf obsMatrix )
 		return (isVisible(timeStamp-1,obsMatrix)!= isVisible(timeStamp,obsMatrix));
 }
 
-bool isHeightChnaged (int timeStamp,MatrixXf obsMatrix, float *heightChanged )
+bool isHeightChanged (int timeStamp,MatrixXf obsMatrix, float *heightChanged )
 {
 	float prev_height = obsMatrix(timeStamp-1,2);
 		float curr_height = obsMatrix(timeStamp,2);
 		float	diff_height = curr_height - prev_height;
 
 		*heightChanged = diff_height;
-		if(diff_height< 0)
-			diff_height = - diff_height;
+		if(diff_height>0)
+			diff_height+=heightNoise;
+		else
+			diff_height = - diff_height + heightNoise;
+		*heightChanged = diff_height;
+		std::cout << "Diff_height is " << diff_height << std::endl;
 		if(diff_height < thresholdHeightChange )
 			return false ;
 		else
@@ -88,10 +107,27 @@ bool isHeightChnaged (int timeStamp,MatrixXf obsMatrix, float *heightChanged )
 
 }
 
-float relativeDistanceMod (int timeStamp, int objectIndex,  int targetObject, std::vector<  MatrixXf > observationVector)
+float relativeDistanceMod (int timeStamp, int objectIndex,  int targetObject, std::vector<  MatrixXf > observationVector, int *heightChanged,int *lastTimeStamp)
 {
 	float obj1_x = observationVector[objectIndex](timeStamp,0) , obj1_y=observationVector[objectIndex](timeStamp,1), obj1_z = observationVector[objectIndex](timeStamp,2);
-		float obj2_x = observationVector[targetObject](timeStamp,0) , obj2_y= observationVector[targetObject](timeStamp,1) ,obj2_z = observationVector[targetObject](timeStamp,2) ;
+int lastVisibleTimeStamp = timeStamp;
+float changedHeight[1];
+std::cout <<" is visible for "<< objectIndex << " "<<targetObject<< " is "
+		<< !isVisible(lastVisibleTimeStamp,observationVector[targetObject]) << std::endl;
+
+while(isHeightChanged(timeStamp,observationVector[objectIndex],changedHeight)
+		&&!isVisible(lastVisibleTimeStamp,observationVector[targetObject]))
+	{
+	std::cout << "changing time stamp" << std::endl;
+		lastVisibleTimeStamp--;
+		heightChanged[0] = 1;
+	}
+std::cout <<" is height changed for "<< objectIndex << " "<<isHeightChanged(timeStamp,observationVector[objectIndex],changedHeight)
+		<< " is "  << heightChanged[0] << std::endl;
+lastTimeStamp[0] = lastVisibleTimeStamp;
+//		if(isHeightChanged(timeStamp,observationVector[objectIndex],heightChanged) )
+	//		obj1_z
+		float obj2_x = observationVector[targetObject](lastVisibleTimeStamp,0) , obj2_y= observationVector[targetObject](lastVisibleTimeStamp,1) ,obj2_z = observationVector[targetObject](lastVisibleTimeStamp,2) ;
 
 
 		Vector3f prev_loc ;
@@ -105,9 +141,12 @@ float relativeDistanceMod (int timeStamp, int objectIndex,  int targetObject, st
 		return relativeD;
 }
 
-bool minimumInterDistance(int timeStamp, int objectIndex, std::vector<  MatrixXf > observationVector, int *targetObject, float *relativeDistance)
+bool minimumInterDistance(int timeStamp, int objectIndex, std::vector<  MatrixXf > observationVector, int *targetObject, float *relativeDistance, int *heightChanged, int *lastVisibleTimeStamp)
 {
 	int totalObjects = observationVector.size();
+	int tempheightChanged[1];
+	int templstVisibleTimeStamp[1];
+	//float isH
 	int i;
 	float minrelDistance =9999999999;
 	int minIndex = -1;
@@ -116,11 +155,13 @@ bool minimumInterDistance(int timeStamp, int objectIndex, std::vector<  MatrixXf
 		{
 		if (i==objectIndex)
 				continue;
-		relDistance = relativeDistanceMod(timeStamp,objectIndex,i,observationVector);
+		relDistance = relativeDistanceMod(timeStamp,objectIndex,i,observationVector,tempheightChanged,templstVisibleTimeStamp);
 		if(relDistance < minrelDistance)
 			{
 				minrelDistance = relDistance;
 				minIndex = i;
+				heightChanged[0]=tempheightChanged[0];
+				lastVisibleTimeStamp[0]=templstVisibleTimeStamp[0];
 			}
 		}
 
@@ -160,6 +201,16 @@ void displayVect4times(std::vector< std::vector< std::vector< std::vector<float>
 
 	}
 
+void initialiseMatrixWithZero(MatrixXf& observationMatrix, int rows, int cols)
+{
+	int i,j;
+for (i=0;i<rows;i++)
+		for (j =0;j<cols;j++)
+			{
+			observationMatrix(i,j)=0;
+
+			}
+}
 
 
 int main()
@@ -167,7 +218,7 @@ int main()
 	int time_num = 0 , i,j,l;
 	int pos_type_num , demos_time ;
 		int idAndTypeOfEvents = 4;
-		int dataRelatedToEvent = 4;
+		int dataRelatedToEvent = 5;
 	 int demos, time_stamps, no_of_events , events_observation_dim ;
 		int id,totalObjects ;
 		std::vector <int> objectId ;
@@ -190,9 +241,13 @@ int k=0;
 std::vector<  MatrixXf > observationVector;
 
 observationVector.resize(totalObjects);
+
 for (i=0;i<totalObjects;i++)
 	{
 	observationVector[i].resize(time_stamps,4);
+
+	initialiseMatrixWithZero(observationVector[i],time_stamps,4);
+	//std::cout << observationVector[i] <<std::endl;
 	//MatrixXf observationVector[i](time_stamps,4);
 		std::stringstream fileName;
 		fileName << "/home/niladri-64/module_heisenberg/data/id" << objectId.at(i) << ".txt" ;
@@ -243,7 +298,7 @@ for(i=0;i<observationVector.size();i++)
 			for(no_of_events = 0; no_of_events< idAndTypeOfEvents ; no_of_events++)
 			 	inference_matrix[demos][time_num][no_of_events].resize(dataRelatedToEvent);
 
-	std::cout << "dlasjdl n" << inference_matrix[demos-1][time_num-1][no_of_events-1].size() << std::endl;
+//	std::cout << "dlasjdl n" << inference_matrix[demos-1][time_num-1][no_of_events-1].size() << std::endl;
 
 
 	std::cout << "start "<< std::endl;
@@ -257,22 +312,30 @@ for(i=0;i<observationVector.size();i++)
 			for(int a3 = 0; a3 < totalObjects ; a3++) // checking all objects
 			{
 				std::cout << "Object id is " << objectId[a3] << std::endl;
-				float positionChanged[1],angleChanged[1], heightChanged[1], relativeDistance[1];
-				int targetObject[1];
+				if(!(isVisible(a2,observationVector[a3])))
+				{
+					std:: cout <<objectId[a3]  <<" is invisible now " << std::endl;
+						continue;
+				}
+				float positionChanged[1],angleChanged[1],  relativeDistance[1];
+				int targetObject[1],heightChanged[1],lastVisibleTimeStamp[1];
 
 				if (isPositionChanged(a2,observationVector[a3],positionChanged))
 							{
 
 					inference_matrix[a1][a2][0][0] = objectId[a3];
 
-								k = 	minimumInterDistance(a2,a3, observationVector,targetObject, relativeDistance);
+								k = 	minimumInterDistance(a2,a3, observationVector,targetObject, relativeDistance,heightChanged,lastVisibleTimeStamp);
+								std::cout << "Distance of "<< objectId[a3]<< "changed by " << *relativeDistance <<" w.r.to "<<objectId[*targetObject]  << std::endl;
 								if(k)
 								{
 
 									inference_matrix[a1][a2][1][0] = 1; // relatively
 									inference_matrix[a1][a2][1][1] = objectId[*targetObject];
-									inference_matrix[a1][a2][1][2] =  - observationVector[ (*targetObject)](a2,0) + observationVector[a3](a2,0);
-									inference_matrix[a1][a2][1][3] = -observationVector[(*targetObject)](a2,1) + observationVector[a3](a2,1);
+									inference_matrix[a1][a2][1][2] =  - observationVector[ (*targetObject)](*lastVisibleTimeStamp,0) + observationVector[a3](a2,0);
+									inference_matrix[a1][a2][1][3] = -observationVector[(*targetObject)](*lastVisibleTimeStamp,1) + observationVector[a3](a2,1);
+									inference_matrix[a1][a2][1][4] = -observationVector[(*targetObject)](*lastVisibleTimeStamp,2) + observationVector[a3](a2,2);
+
 								}
 								else
 								{
@@ -280,6 +343,7 @@ for(i=0;i<observationVector.size();i++)
 									inference_matrix[a1][a2][1][0] = 2;
 									inference_matrix[a1][a2][1][1] = observationVector[a3](a2,0);
 									inference_matrix[a1][a2][1][2] =  observationVector[a3](a2,1);
+									inference_matrix[a1][a2][1][3] =  observationVector[a3](a2,2);
 
 								}
 
@@ -351,16 +415,17 @@ for (demo_count =0; demo_count<demo_num;demo_count++)
 						inferred << "'s position was changed";
 						if(inference_matrix[demo_count][time_count][1][0]==2)
 							{
-							inferred << " absolutively to " << inference_matrix[demo_count][time_count][1][1] << " " << inference_matrix[demo_count][time_count][1][2];
-							inferred_code << "PAC " <<inference_matrix[demo_count][time_count][1][1] << " " << inference_matrix[demo_count][time_count][1][2];
+							inferred << " absolutively to " << inference_matrix[demo_count][time_count][1][1] << " " << inference_matrix[demo_count][time_count][1][2] << " " << inference_matrix[demo_count][time_count][1][3];
+							inferred_code << "PAC " <<inference_matrix[demo_count][time_count][1][1] << " " << inference_matrix[demo_count][time_count][1][2] << " " <<inference_matrix[demo_count][time_count][1][3] ;
 							}
 						if(inference_matrix[demo_count][time_count][1][0]==1)
 							{
 								inferred << " relatively to id of " <<inference_matrix[demo_count][time_count][1][1] ;
 								inferred << " and x displacement of " << inference_matrix[demo_count][time_count][1][2];
 								inferred << " and y displacement of " << inference_matrix[demo_count][time_count][1][3];
+								inferred << " and z displacement of " << inference_matrix[demo_count][time_count][1][4];
 								inferred_code << "PRC " <<  inference_matrix[demo_count][time_count][1][1] << " " ;
-								inferred_code << inference_matrix[demo_count][time_count][1][2] << " " << inference_matrix[demo_count][time_count][1][3] ;
+								inferred_code << inference_matrix[demo_count][time_count][1][2] << " " << inference_matrix[demo_count][time_count][1][3] <<  " " << inference_matrix[demo_count][time_count][1][4];
 							}
 
 					}

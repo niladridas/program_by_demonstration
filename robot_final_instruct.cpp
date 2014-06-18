@@ -102,7 +102,8 @@ Matrix4f frame_transformation(float A_f, float alpha_f, float D_f, float Theta_f
 float thresholdNearDistance = 0.14;
 float thresholdNearDistance_obstacle = 0.21;
 float zOffset = 0.13;
-float zOffsetIntermediate = 0.2;
+float zOffsetIntermediate = 0.10;
+float thresholdHeightChange = 0.07;
 
 void sendData(std::ostringstream *osstring);
 void close_grasp();
@@ -113,6 +114,23 @@ void  socket(char *msg);
 void trapezoidal_close();
 void close_spread();
 void trapezoidal_init();
+void goToJointPosition(float *jointPosition);
+void waitForEnter();
+void calculateJpForPickAndPlace(float *initialDetails, float *jointPositionFinal,float *intermediateJointPosition,float *jointPositionj20);
+bool isNear(float *firstXYZ, float *secondXYZ) ;//This function returns if the 2 given cartesian points are near or not.
+bool isNearRand(float *firstXYZ, float *secondXYZ) ;
+bool isObjectAt(float *finalXYZ, std::vector <int> objectId,MatrixXf observationMatrix, int *targetObjectPID);
+bool isObjectAtRand(float *finalXYZ, std::vector <int> objectId,MatrixXf observationMatrix, int *targetObjectPID);
+bool isAnotherObjectAt(float *finalXYZ, std::vector <int> objectId,MatrixXf observationMatrix, int *targetObjectPID, int currentPID);
+int locationOfId(int targetObjectMarkerId,std::vector <int> objectId);
+void createDummyPositon(float *dummyXYZ, std::vector <int> objectId,MatrixXf observationMatrix, int *targetObjectPID);
+void updateObservationMatrix(MatrixXf& observationMatrix, int objectid, float *finalOutput);
+void createFinalVector(float *finalXYZ, float angle, float *output);
+void pick_and_place (float *currentDetails, float *finalDetails,std::vector <int> objectId,MatrixXf& observationMatrix,int currentMarkerId);
+
+
+
+
 void waitForEnter() {
 	std::string line;
 	std::getline(std::cin, line);
@@ -258,7 +276,7 @@ for(i =0;i < *solutionCounter1; i++)
 	if(dummy4<0)
 		dummy4=-dummy4;
 
-	float dummy = dummy0 +dummy2 ; //+ 0.4*dummy6;
+	float dummy = 0.4*dummy0 +dummy2 ; //+ 0.4*dummy6;
 	if(dummy < min)
 		{
 		index = i;
@@ -310,7 +328,8 @@ for(i =0;i < *solutionCounter2; i++)
 	 if(error6<0)
 		 error6=-error6;
 
-	 curr_error= error0 + 0.2*error4 + error2 + error6 ;//error3+error4+error5+error6;
+	 curr_error = error0 + 0.9*error4 + error2 + error6 ;//error3+error4+error5+error6;
+//	 std::cout << "curr_error " << curr_error<< "and i = " << i << " " << error4 << " " << error6<< std::endl;
 	 if(curr_error < min_error)
 		 {
 //		 std::cout << "curr_error " << curr_error<< "and i = " << i << std::endl;
@@ -448,17 +467,31 @@ void trapezoidal_init()
 {
 
 	std::ostringstream ss;
-	ss << "m 50" ;
+	ss << "m 43" ;
+	sendData(&ss);
+}
+void goToJointPosition(float *jointPosition)
+{
+
+	std::ostringstream ss;
+	ss<<  "j " << jointPosition[0] << " " << jointPosition[1] << " " << jointPosition[2] << " " << jointPosition[3] << " " << jointPosition[4] << " " << jointPosition[5] << " " << jointPosition[6];
 	sendData(&ss);
 }
 
 bool isNear(float *firstXYZ, float *secondXYZ) //This function returns if the 2 given cartesian points are near or not.
 // It doesn't take z in account (now but can be changed). thresholdNearDistance can be changed to change the parameter.
 {
-	Vector2f relativeXYZ;
+	Vector3f relativeXYZ;
 	relativeXYZ(0)=firstXYZ[0]-secondXYZ[0];
 	relativeXYZ(1)=firstXYZ[1]-secondXYZ[1];
-	//relativeXYZ(2)=firstXYZ[2]-secondXYZ[2];
+	relativeXYZ(2)=firstXYZ[2]-zOffset-secondXYZ[2];
+	std::cout << "relative vector  " << relativeXYZ(0) << " " << relativeXYZ(1) << " " << relativeXYZ(2)  <<  std::endl;
+	if(relativeXYZ(2) >=thresholdHeightChange || relativeXYZ(2) <= -thresholdHeightChange  )
+	{
+		std::cout << "Far because of height " << relativeXYZ(2) << std::endl;
+		return false;
+	}
+
 	if(relativeXYZ.norm() < thresholdNearDistance )
 	{
 		std::cout << " Yes,near Relative Distance is " << relativeXYZ.norm()  << "Realtive vector is " <<relativeXYZ(0) << " " << relativeXYZ(1) <<  std::endl;
@@ -556,13 +589,7 @@ bool isAnotherObjectAt(float *finalXYZ, std::vector <int> objectId,MatrixXf obse
 return false;
 }
 
-void goToJointPosition(float *jointPosition)
-{
 
-	std::ostringstream ss;
-	ss<<  "j " << jointPosition[0] << " " << jointPosition[1] << " " << jointPosition[2] << " " << jointPosition[3] << " " << jointPosition[4] << " " << jointPosition[5] << " " << jointPosition[6];
-	sendData(&ss);
-}
 
 int locationOfId(int targetObjectMarkerId,std::vector <int> objectId)
 // it returns the PID from the marker id.
@@ -585,7 +612,7 @@ void createDummyPositon(float *dummyXYZ, std::vector <int> objectId,MatrixXf obs
 	float max_y = 0.41;
 	dummyXYZ[0]= min_x + (max_x - min_x) * r;
 	dummyXYZ[1]= min_y+ (max_y - min_y) * r;
-	dummyXYZ[2]= -0.35;
+	dummyXYZ[2]= -0.23;
 	int i;
 	while(isObjectAtRand(dummyXYZ,objectId,observationMatrix,targetObjectPID))
 	{
@@ -780,8 +807,8 @@ void pick_and_place (float *currentDetails, float *finalDetails,std::vector <int
     	    	 float finalXYZ[3];
 //
 
-    	    	 ss1>> finalXYZ[0]  >> finalXYZ[1];
-    	    	 finalXYZ[2] = observationMatrix(locationOfId(id,objectId),3);
+    	    	 ss1>> finalXYZ[0]  >> finalXYZ[1] >> finalXYZ[2];
+//    	    	 finalXYZ[2] = observationMatrix(locationOfId(id,objectId),3);
     	    	 float currentXYZ[3];
     	    	 currentXYZ[0]=observationMatrix(locationOfId(id,objectId),1);
     	    	 currentXYZ[1]=observationMatrix(locationOfId(id,objectId),2);
@@ -807,16 +834,17 @@ void pick_and_place (float *currentDetails, float *finalDetails,std::vector <int
 					 int targetId;
 
 					 float relativeXYZ[3];
-					 ss1>> targetId >> relativeXYZ[0]  >> relativeXYZ[1];
-					 relativeXYZ[2] = 0;
+					 ss1>> targetId >> relativeXYZ[0]  >> relativeXYZ[1] >> relativeXYZ[2];
+//					 relativeXYZ[2] = 0;
 					 float finalXYZ[3];
 					 finalXYZ[0] = observationMatrix(locationOfId(targetId,objectId),1) + relativeXYZ[0];
 					 finalXYZ[1] = observationMatrix(locationOfId(targetId,objectId),2) + relativeXYZ[1];
-					 std::cout << observationMatrix(locationOfId(targetId,objectId),3) <<std::endl;
+					 finalXYZ[2] = observationMatrix(locationOfId(targetId,objectId),3) + relativeXYZ[2];
+					 //std::cout << observationMatrix(locationOfId(targetId,objectId),3) <<std::endl;
 //					 std::cout << "hello ";
 //					 std::cout << observationMatrix << std::endl;
-					 finalXYZ[2] = observationMatrix(locationOfId(targetId,objectId),3) + relativeXYZ[2];
-					 std::cout << finalXYZ[2];
+	//				 finalXYZ[2] = observationMatrix(locationOfId(targetId,objectId),3) + relativeXYZ[2];
+					 std::cout << "Final XYZ in Relative case is " <<    finalXYZ[0] <<" " <<   finalXYZ[1] << " " <<finalXYZ[2] << std::endl;;
 					 float currentXYZ[3];
 					 currentXYZ[0]=observationMatrix(locationOfId(id,objectId),1);
 					 currentXYZ[1]=observationMatrix(locationOfId(id,objectId),2);
@@ -849,9 +877,10 @@ void pick_and_place (float *currentDetails, float *finalDetails,std::vector <int
 					 float angle =observationMatrix(locationOfId(id,objectId),4) ;
 					 float currentOutput[9];
 					 float finalOutput[9];
-					 createFinalVector(currentXYZ,targetAngle,finalOutput);
 					 createFinalVector(currentXYZ,angle,currentOutput);
-					// pick_and_place(currentOutput,finalOutput);
+
+					 createFinalVector(currentXYZ,targetAngle,finalOutput);
+					 // pick_and_place(currentOutput,finalOutput);
 					 pick_and_place(currentOutput,finalOutput,objectId,observationMatrix,id);
 	    	    //	 updateObservationMatrix(observationMatrix,locationOfId(id,objectId),finalOutput);
 

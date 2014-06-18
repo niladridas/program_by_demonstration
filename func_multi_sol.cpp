@@ -364,7 +364,9 @@ for(int k = 0; k < search_size; k++)
 
 	float temp_cos = dot_product/(cal_end_effector.norm()*DT_pos.norm());
 
-	float comp_temp_cos = cos(0.005/DT_pos.norm());
+	float comp_temp_cos = cos(0.003/DT_pos.norm());
+
+	int k_5 , k_7;
 
 if(temp_cos >= comp_temp_cos || temp_cos <= -comp_temp_cos)
 {
@@ -378,7 +380,30 @@ if(temp_cos >= comp_temp_cos || temp_cos <= -comp_temp_cos)
 		final_joint_angles(sol_counter,4) = theta_5_out;
 		final_joint_angles(sol_counter,5) = theta_6_out;
 		final_joint_angles(sol_counter,6) = theta_7_out;
+
+		if(theta_5_out < -1.901592654)
+			k_5 = 1;
+		else
+			k_5 = -1;
+
+		if(theta_7_out < -0.141592654)
+			k_7 = 1;
+		else
+			k_7 = -1;
+
 		sol_counter = sol_counter +1 ;
+
+final_joint_angles(sol_counter,0) = theta_1_out;
+	final_joint_angles(sol_counter,1) = theta_2_out;
+	final_joint_angles(sol_counter,2) = theta_3_out;
+	final_joint_angles(sol_counter,3) = theta_4_out;
+	final_joint_angles(sol_counter,4) = theta_5_out + k_5*pi;
+	final_joint_angles(sol_counter,5) = -theta_6_out;
+	final_joint_angles(sol_counter,6) = theta_7_out + k_7*pi;
+
+	sol_counter = sol_counter +1 ;
+
+
 
 	}
 }
