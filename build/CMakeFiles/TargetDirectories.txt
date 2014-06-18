@@ -4,10 +4,7 @@
 /home/niladri-64/module_heisenberg/build/CMakeFiles/cluster_cube.dir
 /home/niladri-64/module_heisenberg/build/CMakeFiles/create_inference_input.dir
 /home/niladri-64/module_heisenberg/build/CMakeFiles/create_input.dir
-/home/niladri-64/module_heisenberg/build/CMakeFiles/demonstration.dir
-/home/niladri-64/module_heisenberg/build/CMakeFiles/demonstration_general.dir
 /home/niladri-64/module_heisenberg/build/CMakeFiles/demonstration_general_v3.dir
-/home/niladri-64/module_heisenberg/build/CMakeFiles/demonstration_mod.dir
 /home/niladri-64/module_heisenberg/build/CMakeFiles/gen_abs_orient.dir
 /home/niladri-64/module_heisenberg/build/CMakeFiles/inference_final.dir
 /home/niladri-64/module_heisenberg/build/CMakeFiles/marker_detection.dir

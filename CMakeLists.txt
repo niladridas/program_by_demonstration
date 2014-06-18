@@ -38,14 +38,14 @@ target_link_libraries( pcd_rgb_depth ${OpenCV_LIBS} ${PCL_LIBRARIES} )
 add_executable( marker_detection marker_detection.cpp )
 target_link_libraries( marker_detection ${OpenCV_LIBS} ${PCL_LIBRARIES} ${aruco_LIBS})
 
-add_executable( demonstration demonstration.cpp )
-target_link_libraries( demonstration ${OpenCV_LIBS} ${PCL_LIBRARIES} ${aruco_LIBS})
+#add_executable( demonstration demonstration.cpp )
+#target_link_libraries( demonstration ${OpenCV_LIBS} ${PCL_LIBRARIES} ${aruco_LIBS})
 
-add_executable( demonstration_mod demonstration_mod.cpp )
-target_link_libraries( demonstration_mod ${OpenCV_LIBS} ${PCL_LIBRARIES} ${aruco_LIBS})
+#add_executable( demonstration_mod demonstration_mod.cpp )
+#target_link_libraries( demonstration_mod ${OpenCV_LIBS} ${PCL_LIBRARIES} ${aruco_LIBS})
 
-add_executable( demonstration_general demonstration_general.cpp )
-target_link_libraries( demonstration_general ${OpenCV_LIBS} ${PCL_LIBRARIES} ${aruco_LIBS})
+#add_executable( demonstration_general demonstration_general.cpp )
+#target_link_libraries( demonstration_general ${OpenCV_LIBS} ${PCL_LIBRARIES} ${aruco_LIBS})
 
 add_executable( demonstration_general_v3 demonstration_general_v3.cpp )
 target_link_libraries( demonstration_general_v3 ${OpenCV_LIBS} ${PCL_LIBRARIES} ${aruco_LIBS})
@@ -71,6 +71,7 @@ add_executable (basic_modules basic_modules.cpp ${HEADER_FILES})
 add_executable (visuospatial visuospatial.cpp)
 
 add_executable (robot_final_instruct robot_final_instruct.cpp)
+target_link_libraries( robot_final_instruct ${OpenCV_LIBS} ${PCL_LIBRARIES} ${aruco_LIBS})
 
 
 

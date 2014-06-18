@@ -177,32 +177,6 @@ create_input/fast:
 .PHONY : create_input/fast
 
 #=============================================================================
-# Target rules for targets named demonstration
-
-# Build rule for target.
-demonstration: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 demonstration
-.PHONY : demonstration
-
-# fast build rule for target.
-demonstration/fast:
-	$(MAKE) -f CMakeFiles/demonstration.dir/build.make CMakeFiles/demonstration.dir/build
-.PHONY : demonstration/fast
-
-#=============================================================================
-# Target rules for targets named demonstration_general
-
-# Build rule for target.
-demonstration_general: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 demonstration_general
-.PHONY : demonstration_general
-
-# fast build rule for target.
-demonstration_general/fast:
-	$(MAKE) -f CMakeFiles/demonstration_general.dir/build.make CMakeFiles/demonstration_general.dir/build
-.PHONY : demonstration_general/fast
-
-#=============================================================================
 # Target rules for targets named demonstration_general_v3
 
 # Build rule for target.
@@ -214,19 +188,6 @@ demonstration_general_v3: cmake_check_build_system
 demonstration_general_v3/fast:
 	$(MAKE) -f CMakeFiles/demonstration_general_v3.dir/build.make CMakeFiles/demonstration_general_v3.dir/build
 .PHONY : demonstration_general_v3/fast
-
-#=============================================================================
-# Target rules for targets named demonstration_mod
-
-# Build rule for target.
-demonstration_mod: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 demonstration_mod
-.PHONY : demonstration_mod
-
-# fast build rule for target.
-demonstration_mod/fast:
-	$(MAKE) -f CMakeFiles/demonstration_mod.dir/build.make CMakeFiles/demonstration_mod.dir/build
-.PHONY : demonstration_mod/fast
 
 #=============================================================================
 # Target rules for targets named gen_abs_orient
@@ -515,54 +476,6 @@ create_input.cpp.s:
 	$(MAKE) -f CMakeFiles/create_input.dir/build.make CMakeFiles/create_input.dir/create_input.cpp.s
 .PHONY : create_input.cpp.s
 
-demonstration.o: demonstration.cpp.o
-.PHONY : demonstration.o
-
-# target to build an object file
-demonstration.cpp.o:
-	$(MAKE) -f CMakeFiles/demonstration.dir/build.make CMakeFiles/demonstration.dir/demonstration.cpp.o
-.PHONY : demonstration.cpp.o
-
-demonstration.i: demonstration.cpp.i
-.PHONY : demonstration.i
-
-# target to preprocess a source file
-demonstration.cpp.i:
-	$(MAKE) -f CMakeFiles/demonstration.dir/build.make CMakeFiles/demonstration.dir/demonstration.cpp.i
-.PHONY : demonstration.cpp.i
-
-demonstration.s: demonstration.cpp.s
-.PHONY : demonstration.s
-
-# target to generate assembly for a file
-demonstration.cpp.s:
-	$(MAKE) -f CMakeFiles/demonstration.dir/build.make CMakeFiles/demonstration.dir/demonstration.cpp.s
-.PHONY : demonstration.cpp.s
-
-demonstration_general.o: demonstration_general.cpp.o
-.PHONY : demonstration_general.o
-
-# target to build an object file
-demonstration_general.cpp.o:
-	$(MAKE) -f CMakeFiles/demonstration_general.dir/build.make CMakeFiles/demonstration_general.dir/demonstration_general.cpp.o
-.PHONY : demonstration_general.cpp.o
-
-demonstration_general.i: demonstration_general.cpp.i
-.PHONY : demonstration_general.i
-
-# target to preprocess a source file
-demonstration_general.cpp.i:
-	$(MAKE) -f CMakeFiles/demonstration_general.dir/build.make CMakeFiles/demonstration_general.dir/demonstration_general.cpp.i
-.PHONY : demonstration_general.cpp.i
-
-demonstration_general.s: demonstration_general.cpp.s
-.PHONY : demonstration_general.s
-
-# target to generate assembly for a file
-demonstration_general.cpp.s:
-	$(MAKE) -f CMakeFiles/demonstration_general.dir/build.make CMakeFiles/demonstration_general.dir/demonstration_general.cpp.s
-.PHONY : demonstration_general.cpp.s
-
 demonstration_general_v3.o: demonstration_general_v3.cpp.o
 .PHONY : demonstration_general_v3.o
 
@@ -586,30 +499,6 @@ demonstration_general_v3.s: demonstration_general_v3.cpp.s
 demonstration_general_v3.cpp.s:
 	$(MAKE) -f CMakeFiles/demonstration_general_v3.dir/build.make CMakeFiles/demonstration_general_v3.dir/demonstration_general_v3.cpp.s
 .PHONY : demonstration_general_v3.cpp.s
-
-demonstration_mod.o: demonstration_mod.cpp.o
-.PHONY : demonstration_mod.o
-
-# target to build an object file
-demonstration_mod.cpp.o:
-	$(MAKE) -f CMakeFiles/demonstration_mod.dir/build.make CMakeFiles/demonstration_mod.dir/demonstration_mod.cpp.o
-.PHONY : demonstration_mod.cpp.o
-
-demonstration_mod.i: demonstration_mod.cpp.i
-.PHONY : demonstration_mod.i
-
-# target to preprocess a source file
-demonstration_mod.cpp.i:
-	$(MAKE) -f CMakeFiles/demonstration_mod.dir/build.make CMakeFiles/demonstration_mod.dir/demonstration_mod.cpp.i
-.PHONY : demonstration_mod.cpp.i
-
-demonstration_mod.s: demonstration_mod.cpp.s
-.PHONY : demonstration_mod.s
-
-# target to generate assembly for a file
-demonstration_mod.cpp.s:
-	$(MAKE) -f CMakeFiles/demonstration_mod.dir/build.make CMakeFiles/demonstration_mod.dir/demonstration_mod.cpp.s
-.PHONY : demonstration_mod.cpp.s
 
 gen_abs_orient.o: gen_abs_orient.cpp.o
 .PHONY : gen_abs_orient.o
@@ -887,10 +776,7 @@ help:
 	@echo "... cluster_cube"
 	@echo "... create_inference_input"
 	@echo "... create_input"
-	@echo "... demonstration"
-	@echo "... demonstration_general"
 	@echo "... demonstration_general_v3"
-	@echo "... demonstration_mod"
 	@echo "... edit_cache"
 	@echo "... gen_abs_orient"
 	@echo "... inference_final"
@@ -922,18 +808,9 @@ help:
 	@echo "... create_input.o"
 	@echo "... create_input.i"
 	@echo "... create_input.s"
-	@echo "... demonstration.o"
-	@echo "... demonstration.i"
-	@echo "... demonstration.s"
-	@echo "... demonstration_general.o"
-	@echo "... demonstration_general.i"
-	@echo "... demonstration_general.s"
 	@echo "... demonstration_general_v3.o"
 	@echo "... demonstration_general_v3.i"
 	@echo "... demonstration_general_v3.s"
-	@echo "... demonstration_mod.o"
-	@echo "... demonstration_mod.i"
-	@echo "... demonstration_mod.s"
 	@echo "... gen_abs_orient.o"
 	@echo "... gen_abs_orient.i"
 	@echo "... gen_abs_orient.s"

@@ -79,10 +79,215 @@ locationOfId[MarkerId] = objectPId
 #include<fstream>
 
 
+#include <pcl/io/openni_grabber.h>
+#include <pcl/visualization/cloud_viewer.h>
+#include <pcl/io/pcd_io.h>
+#include <boost/thread/thread.hpp>
+//#include <pcl/filters/passthrough.h>
+#include <string>
+#include <sstream>
+#include <iostream>
+#include <boost/thread/thread.hpp>
+#include <pcl/common/common_headers.h>
+#include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/console/parse.h>
+#include<pcl/common/geometry.h>
+#include <pcl/filters/statistical_outlier_removal.h>
+#include <limits>
+#include <fstream>
+#include <vector>
+#include <Eigen/Core>
+#include <pcl/point_cloud.h>
+//#include <pcl/kdtree/kdtree_flann.h>
+//#include <pcl/filters/passthrough.h>
+#include <pcl/features/fpfh.h>
+#include <pcl/registration/ia_ransac.h>
+#include <pcl/ModelCoefficients.h>
+#include <pcl/point_types.h>
+#include <pcl/io/pcd_io.h>
+//#include <pcl/filters/extract_indices.h>
+//#include <pcl/filters/voxel_grid.h>
+//#include <pcl/features/normal_3d.h>
+//#include <pcl/kdtree/kdtree.h>
+//#include <pcl/sample_consensus/method_types.h>
+//#include <pcl/sample_consensus/model_types.h>
+//#include <pcl/segmentation/sac_segmentation.h>
+//#include <pcl/segmentation/extract_clusters.h>
+#include "opencv2/highgui/highgui.hpp"
+#include<opencv/cv.h>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <iostream>
+#include<cmath>
+#include<math.h>
+#include<stdlib.h>
+#include <iostream>
+#include <aruco/aruco.h>
+#include <aruco/cvdrawingutils.h>
+#include <opencv2/highgui/highgui.hpp>
+
+
 
 
 using namespace Eigen;
 using namespace std;
+
+using namespace aruco;
+using namespace cv;
+using namespace Eigen;
+
+//#define PI 3.14159265;
+#define PiValue 3.14159265;
+
+Vector4f Red_in_camera, Green_in_camera, Center_in_camera, Red_in_robot, Green_in_robot, Centre_in_robot ;
+Vector4f infoMarker;
+Vector2f Angle_vector, norm_angle_vector;
+int pcl_count= 0;
+int markerMID;
+float angle;
+const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGBA> );
+//void CallBackFunc(int event, int x, int y, int flags, void* userdata);
+
+Eigen::Matrix4f temp_trans;
+std::ofstream f_tmp;
+//void CallBackFunc(int event, int x, int y, int flags, void* userdata);
+class SimpleOpenNIViewer
+ {
+   	public:
+
+	MarkerDetector MDetector;
+	vector<Marker> Markers;
+
+   void save_cloud(int markerID)
+	{
+
+
+
+	   for(int k = 0 ; k < Markers.size(); k++)
+	   {
+		   int row_red = int(Markers[k].at(0).x + 0.5);
+		   int col_red = int(Markers[k].at(0).y + 0.5);
+		   Red_in_camera << cloud->at(row_red,col_red).x, cloud->at(row_red,col_red).y, cloud->at(row_red,col_red).z,1;
+		   int row_green = int(Markers[k].at(1).x + 0.5);
+		   int col_green = int(Markers[k].at(1).y + 0.5);
+		   Green_in_camera << cloud->at(row_green,col_green).x, cloud->at(row_green,col_green).y, cloud->at(row_green,col_green).z,1;
+		   int row_centre_x = int(Markers[k].getCenter().x + 0.5);
+		   int row_centre_y = int(Markers[k].getCenter().y + 0.5);
+		   Center_in_camera << cloud->at(row_centre_x,row_centre_y).x, cloud->at(row_centre_x,row_centre_y).y, cloud->at(row_centre_x,row_centre_y).z,1;
+		   Red_in_robot = temp_trans*Red_in_camera;
+		   Green_in_robot = temp_trans*Green_in_camera;
+		   Centre_in_robot = temp_trans*Center_in_camera;
+		   Angle_vector << (Red_in_robot - Green_in_robot)(0), (Red_in_robot - Green_in_robot)(1);
+		   norm_angle_vector= Angle_vector.normalized();
+		   angle = atan2(norm_angle_vector(1),norm_angle_vector(0))* 180/PiValue;
+		   if(angle<0)
+			   	   angle=-angle;
+//   		 f1 <<  time_stamp << " " << Centre_in_robot(0) << " " << Centre_in_robot(1) << " " <<  Centre_in_robot(2) << " " << angle << std::endl;
+
+//	   		  std::cout << "Marker found with id = " << markerID << " " << Markers[k].id << " " << pcl_count<< std::endl;
+
+		   if(markerID==Markers[k].id)
+		   {
+
+			   infoMarker(0)= Centre_in_robot(0);
+	   			infoMarker(1)= Centre_in_robot(1);
+	   			infoMarker(2)= Centre_in_robot(2);
+	   			infoMarker(3)= angle;
+	   			pcl_count++;
+	   		  std::cout << "Marker found with id = " << markerID  << " " << pcl_count<< std::endl;
+	   		  return;
+		   }
+
+	   }
+
+
+	}
+
+   void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cloud2)
+	 {
+
+	   if (cv::waitKey(30) != 27)
+	   {
+
+
+		   cv::Mat image(cloud2->height, cloud2->width, CV_8UC3);
+		   cv::Mat depth(cloud2->height, cloud2->width, CV_32FC1 );
+
+		   for (int h=0; h<image.rows; h++)
+		   {
+			   for (int w=0; w<image.cols; w++)
+			   {
+					pcl::PointXYZRGBA point = cloud2->at(w, h);
+					Eigen::Vector3i rgb = point.getRGBVector3i();
+					image.at<cv::Vec3b>(h,w)[0] = rgb[2];
+					image.at<cv::Vec3b>(h,w)[1] = rgb[1];
+					image.at<cv::Vec3b>(h,w)[2] = rgb[0];
+					depth.at<float>(h,w) = point.z;
+			   }
+
+		    }
+
+		   MDetector.detect(image,Markers);
+
+		   while(Markers.size()==0)
+		   {
+			   return ;
+		   }
+		   if(pcl_count>0)
+		   		   		   	   return;
+		   pcl::copyPointCloud(*cloud2,*cloud);
+		   for (unsigned int i=0;i<Markers.size();i++)
+		   {
+			//	cout<<Markers[i]<<endl;
+				Markers[i].draw(image,Scalar(0,0,255),2);
+		   }
+
+//
+
+		   cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE );// Create a window for display.
+		   save_cloud(markerMID);
+
+//		   cv::setMouseCallback("Display window", CallBackFunc, NULL);
+		   cv::imshow( "Display window", image );
+
+		 }
+	 }
+
+   void run ()
+   {
+	   pcl::Grabber* interface = new pcl::OpenNIGrabber();
+	   boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
+	   boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
+	   interface->registerCallback (f);
+	   interface->start ();
+
+	   while (cv::waitKey(30) != 27)
+	         {
+		   	   if(pcl_count>0)
+		   		   	   return;
+	           boost::this_thread::sleep (boost::posix_time::seconds (5));
+
+		   	   if(pcl_count>0)
+		   		   	   return;
+	         }
+
+//	   return;
+
+
+
+	   interface->stop ();
+   }
+
+
+}
+ v; //Creating object of class
+
+// void CallBackFunc(int event, int x, int y, int flags, void* userdata)
+//    	   {
+//
+//;
+//
+//    	   }
 
 Matrix4f frame_transformation(float A_f, float alpha_f, float D_f, float Theta_f)
 {
@@ -124,7 +329,7 @@ bool isObjectAtRand(float *finalXYZ, std::vector <int> objectId,MatrixXf observa
 bool isAnotherObjectAt(float *finalXYZ, std::vector <int> objectId,MatrixXf observationMatrix, int *targetObjectPID, int currentPID);
 int locationOfId(int targetObjectMarkerId,std::vector <int> objectId);
 void createDummyPositon(float *dummyXYZ, std::vector <int> objectId,MatrixXf observationMatrix, int *targetObjectPID);
-void updateObservationMatrix(MatrixXf& observationMatrix, int objectid, float *finalOutput);
+void updateObservationMatrix(MatrixXf& observationMatrix, int objectMID,int objectPID);
 void createFinalVector(float *finalXYZ, float angle, float *output);
 void pick_and_place (float *currentDetails, float *finalDetails,std::vector <int> objectId,MatrixXf& observationMatrix,int currentMarkerId,float *currentJointPosition);
 
@@ -670,13 +875,16 @@ void createDummyPositon(float *dummyXYZ, std::vector <int> objectId,MatrixXf obs
 	//dummyXYZ[0];
 }
 
-void updateObservationMatrix(MatrixXf& observationMatrix, int objectid, float *finalOutput)
+void updateObservationMatrix(MatrixXf& observationMatrix, int objectMID,int objectPID)
 {
-
-	observationMatrix(objectid,1)= finalOutput[0];
-	observationMatrix(objectid,2)= finalOutput[1];
-	observationMatrix(objectid,3)= finalOutput[2] - zOffset;
-	observationMatrix(objectid,4)= atan2(finalOutput[7],finalOutput[6]) * (180/PI) - 90;
+	pcl_count=0;
+	markerMID=objectMID;
+	v.run();
+	//v.save_cloud(markerMID);
+	observationMatrix(objectPID,1)= infoMarker(0);
+	observationMatrix(objectPID,2)= infoMarker(1);
+	observationMatrix(objectPID,3)= infoMarker(2) ;//- zOffset;
+	observationMatrix(objectPID,4)= infoMarker(3);
 
 }
 void createFinalVector(float *finalXYZ, float angle, float *output)
@@ -781,7 +989,7 @@ void pick_and_place (float *currentDetails, float *finalDetails,std::vector <int
 	goToJointPosition(finalJpJ20);
 	updateCurrentJointPosition(currentJointPosition,finalJpJ20);
 	open_grasp();
-	updateObservationMatrix(observationMatrix,locationOfId(currentMarkerId,objectId),finalDetails);
+	updateObservationMatrix(observationMatrix,currentMarkerId,locationOfId(currentMarkerId,objectId));
 	std::cout << "updated matrix" << std::endl << observationMatrix << std::endl;
 	//	close_spread();
 //	trapezoidal_close();
@@ -789,19 +997,66 @@ void pick_and_place (float *currentDetails, float *finalDetails,std::vector <int
 }
 
 
+void initialiseMatrixWithZero(MatrixXf& observationMatrix, int rows, int cols)
+{
+	int i,j;
+for (i=0;i<rows;i++)
+		for (j =0;j<cols;j++)
+			{
+			observationMatrix(i,j)=0;
 
+			}
+}
      using namespace std;
      using namespace Eigen;
      int main()
      {
+    	 std::ifstream trans_file("/home/niladri-64/module_heisenberg/data/translation_matrix.txt");
+    	 	 std::string trans_line;
+    	 	 int counter = 0;
+    	 	 while (std::getline(trans_file, trans_line))
+    	 	 {
+    	 		  std::istringstream trans_iss(trans_line);
+    	 		  double a, b,c,d;
+    	 		  if (!(trans_iss >> a >> b >> c >> d))
+    	 			{ break; } // error
+    	 		  temp_trans(counter,0) =  a;
+    	 		  temp_trans(counter,1) =  b;
+    	 		  temp_trans(counter,2) =  c;
+    	 		  temp_trans(counter,3) = d ;
+    	 		 counter ++;
+    	 	  }
+    	 	//v.run ();
     	 float currentJointPosition[7] = {0.00076699, -1.97339, -0.0280971, 3.17994, 0.0176329, -0.0286238, -0.0207545 };
 
 
     		std::vector <int> objectId ;
 
+
+    	 int totalObjects;
+    	 int time_stamps;
     	 MatrixXf observationMatrix (8,5);
- //   	 observationVector.resize(8);
-    		std::ifstream intialFile("/home/niladri-64/module_heisenberg/data/initial_condition.txt");
+    	     	 		 //   	 observationVector.resize(8);
+    	     	 		    	 initialiseMatrixWithZero(observationMatrix,8,5);
+
+    	 std::ifstream demo_infile2("/home/niladri-64/module_heisenberg/data/demo_info.txt");
+    	 		std::string demo_line2;
+    	 		while (std::getline(demo_infile2, demo_line2))
+    	 		{
+    	 			int id;
+    	 		    std::istringstream demo_iss2(demo_line2);
+    	 		   demo_iss2 >> time_stamps >> totalObjects ;
+    	 		    for(int i=0;i<totalObjects;i++)
+    	 		    				{
+    	 		    	demo_iss2 >> id;
+    	 		    	observationMatrix(i,0) = id;
+    	 		    				objectId.push_back(id);
+
+    	 		    				}
+    	 		}
+
+
+    	 std::ifstream intialFile("/home/niladri-64/module_heisenberg/data/initial_condition.txt");
    			std::string file_line;
    			int index = 0;
     			while (std::getline(intialFile, file_line))
@@ -810,13 +1065,14 @@ void pick_and_place (float *currentDetails, float *finalDetails,std::vector <int
     				float xyzangle[4];
     			    std::istringstream iss2(file_line);
     			    iss2 >> id >> xyzangle[0] >> xyzangle[1] >> xyzangle[2] >> xyzangle[3] ;
-       				objectId.push_back(id);
-       				observationMatrix(index,0)=id;
+    			    index = locationOfId(id,objectId);
+    			    //       				objectId.push_back(id);
+  //     				observationMatrix(index,0)=id;
        				observationMatrix(index,1)=xyzangle[0];
        				observationMatrix(index,2)=xyzangle[1];
        				observationMatrix(index,3)=xyzangle[2];
        				observationMatrix(index,4)=xyzangle[3]; // angle
-       				index++;
+       				//index++;
     			}
 
 
@@ -845,6 +1101,7 @@ void pick_and_place (float *currentDetails, float *finalDetails,std::vector <int
     	     	} // error
     	     std::cout << "And id is " << id << "  " <<iss.str() << std::endl;
 
+    	 	updateObservationMatrix(observationMatrix,id,locationOfId(id,objectId));
 
     	     iss.str().c_str();
     	     std::string msgStr = iss.str();
