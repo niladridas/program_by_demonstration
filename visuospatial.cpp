@@ -321,31 +321,32 @@ for (demo_count =0; demo_count<demo_num;demo_count++)
 			//{
 				//if(inference_matrix[demo_count][time_count][event_count][0]!=0)
 				//{
-					if(inference_matrix[demo_count][time_count][1][0]!=0 && inference_matrix[demo_count][time_count][2][0]!=0) // position & angle
-					{
-						inferred << "'s position & angle was changed" ;
-						inferred << ". POsition by " ;
-						inferred_code << "POC ";
-						if(inference_matrix[demo_count][time_count][1][0]==2)
-							{
-							inferred << " absolutively to " << inference_matrix[demo_count][time_count][1][1] << " " << inference_matrix[demo_count][time_count][1][2];
-							inferred_code << "PAC " <<inference_matrix[demo_count][time_count][1][1] << " " << inference_matrix[demo_count][time_count][1][2];
-							}
-						if(inference_matrix[demo_count][time_count][1][0]==1)
-							{
-								inferred << " relatively to id of " <<inference_matrix[demo_count][time_count][1][1] ;
-								inferred << " and x displacement of " << inference_matrix[demo_count][time_count][1][2];
-								inferred << " and y displacement of " << inference_matrix[demo_count][time_count][1][3];
-								inferred_code << "PRC " <<  inference_matrix[demo_count][time_count][1][1] << " " ;
-								inferred_code << inference_matrix[demo_count][time_count][1][2] << " " << inference_matrix[demo_count][time_count][1][3] ;
-							}
-
-						inferred << "and angle was changed to " <<inference_matrix[demo_count][time_count][2][1] ;
-						inferred_code << "OAC" << " " << inference_matrix[demo_count][time_count][2][1];
-
-					}
-
-					else if(inference_matrix[demo_count][time_count][1][0]!=0) //only position
+//					if(inference_matrix[demo_count][time_count][1][0]!=0 && inference_matrix[demo_count][time_count][2][0]!=0) // position & angle
+//					{
+//						inferred << "'s position & angle was changed" ;
+//						inferred << ". POsition by " ;
+//						inferred_code << "POC ";
+//						if(inference_matrix[demo_count][time_count][1][0]==2)
+//							{
+//							inferred << " absolutively to " << inference_matrix[demo_count][time_count][1][1] << " " << inference_matrix[demo_count][time_count][1][2];
+//							inferred_code << "PAC " <<inference_matrix[demo_count][time_count][1][1] << " " << inference_matrix[demo_count][time_count][1][2];
+//							}
+//						if(inference_matrix[demo_count][time_count][1][0]==1)
+//							{
+//								inferred << " relatively to id of " <<inference_matrix[demo_count][time_count][1][1] ;
+//								inferred << " and x displacement of " << inference_matrix[demo_count][time_count][1][2];
+//								inferred << " and y displacement of " << inference_matrix[demo_count][time_count][1][3];
+//								inferred_code << "PRC " <<  inference_matrix[demo_count][time_count][1][1] << " " ;
+//								inferred_code << inference_matrix[demo_count][time_count][1][2] << " " << inference_matrix[demo_count][time_count][1][3] ;
+//							}
+//
+//						inferred << "and angle was changed to " <<inference_matrix[demo_count][time_count][2][1] ;
+//						inferred_code << "OAC" << " " << inference_matrix[demo_count][time_count][2][1];
+//
+//					}
+//
+//					else
+						if(inference_matrix[demo_count][time_count][1][0]!=0) //only position
 					{
 						inferred << "'s position was changed";
 						if(inference_matrix[demo_count][time_count][1][0]==2)

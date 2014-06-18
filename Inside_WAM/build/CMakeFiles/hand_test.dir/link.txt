@@ -1,0 +1,1 @@
+/usr/bin/c++       CMakeFiles/hand_test.dir/main/hand_test.cpp.o  -o hand_test -rdynamic -L/usr/local/lib -L/home/robot/sam/builds -lboost_thread-mt -lpthread -lboost_python -L/usr/lib -lgsl -lgslcblas -lm -lconfig -lconfig++ -lnative -lxenomai -lrtdm -lpython2.7 -lbarrett -Wl,-rpath,/usr/local/lib:/home/robot/sam/builds 

@@ -38,7 +38,7 @@ move_hand2
 move_hand
 testMain
 hand_test
-ex08_teach_and_play
+#ex08_teach_and_play
 ex12
 ex13
 FinalShow

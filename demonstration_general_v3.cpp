@@ -161,7 +161,8 @@ class SimpleOpenNIViewer
 		   Angle_vector << (Red_in_robot - Green_in_robot)(0), (Red_in_robot - Green_in_robot)(1);
 		   norm_angle_vector= Angle_vector.normalized();
 		   angle = atan2(norm_angle_vector(1),norm_angle_vector(0))* 180/PI;
-
+		   if(angle<0)
+			   	   angle=-angle;
 
 		   // marker Id, then centre X, centre Y, Centre Z and orientation
 		   switch (Markers[k].id)

@@ -67,7 +67,7 @@
 #include<fstream>
 
 using namespace barrett;
-
+//float angle_rad;
 using detail::waitForEnter;
 // This function template will accept a math::Matrix with any number of rows,
 // any number of columns, and any units. In other words: it will accept any
@@ -126,12 +126,17 @@ void printMenu() {
 	printf("  j  Enter a joint position destination\n");
 	printf("  i  Idle (release position/orientation constraints)\n");
 	printf("  q  Quit\n");
+	printf("  t  trapezoidal movement grasp 30 degrees\n");
+	printf("  m  Custom trapezoidal move\n");
+
 	//printf("  f  Calibrate using standard joint positions\n");
 	printf("  g  Fingures spread by 60 degrees 1\n");
 
 }
-
-
+float angle_radian;
+float angle_degree;
+std::istringstream iss2;
+std::string temp_str;
 std::ifstream infile_jp("/home/robot/sam/cal_joint_pos.txt");
 std::string line_jp;
 //---------------------------------------------------------------------------------------------------
@@ -221,6 +226,24 @@ int wam_main(int argc, char** argv, ProductManager& pm, systems::Wam<DOF>& wam) 
 		case 'b':
 			hand->trapezoidalMove(Hand::jp_type(M_PI/2.0), Hand::GRASP);
 			break;
+
+		case 't':
+			hand->trapezoidalMove(Hand::jp_type((M_PI)/6.0), Hand::GRASP);
+//			std::cout << "sending back a message..." << std::endl;
+			break;
+
+		case 'm':
+//			temp_str = line.substr(2);
+			iss2.clear();
+			iss2.str("");
+			iss2.str(line.substr(2)) ;
+		    iss2 >> angle_degree;
+//			std::cin >> angle_degree;
+			angle_radian = angle_degree*(M_PI/180);
+			hand->trapezoidalMove(Hand::jp_type(angle_radian), Hand::GRASP);
+			std::cout << angle_degree << std::endl;
+			break;
+
 
 		case 'q':
 		case 'x':

@@ -102,7 +102,7 @@ Matrix4f frame_transformation(float A_f, float alpha_f, float D_f, float Theta_f
 float thresholdNearDistance = 0.14;
 float thresholdNearDistance_obstacle = 0.21;
 float zOffset = 0.13;
-float zOffsetIntermediate = 0.3;
+float zOffsetIntermediate = 0.2;
 
 void sendData(std::ostringstream *osstring);
 void close_grasp();
@@ -112,6 +112,7 @@ void sendData(std::ostringstream *osstring);
 void  socket(char *msg);
 void trapezoidal_close();
 void close_spread();
+void trapezoidal_init();
 void waitForEnter() {
 	std::string line;
 	std::getline(std::cin, line);
@@ -245,6 +246,7 @@ for(i =0;i < *solutionCounter1; i++)
 	 dummy1 = solutionSpace(i,1);
 	 dummy2 = solutionSpace(i,2);
 	 dummy3 = solutionSpace(i,3);
+	 dummy4 = solutionSpace(i,4);
 	 dummy5 = solutionSpace(i,5);
 	 dummy6 = solutionSpace(i,6);
 
@@ -253,8 +255,8 @@ for(i =0;i < *solutionCounter1; i++)
 		dummy0=-dummy0;
 	if(dummy2<0)
 		dummy2=-dummy2;
-	if(dummy6<0)
-		dummy6=-dummy6;
+	if(dummy4<0)
+		dummy4=-dummy4;
 
 	float dummy = dummy0 +dummy2 ; //+ 0.4*dummy6;
 	if(dummy < min)
@@ -308,7 +310,7 @@ for(i =0;i < *solutionCounter2; i++)
 	 if(error6<0)
 		 error6=-error6;
 
-	 curr_error= error0 + 0.0*error1 + error2 + error6 ;//error3+error4+error5+error6;
+	 curr_error= error0 + 0.2*error4 + error2 + error6 ;//error3+error4+error5+error6;
 	 if(curr_error < min_error)
 		 {
 //		 std::cout << "curr_error " << curr_error<< "and i = " << i << std::endl;
@@ -442,6 +444,13 @@ void send_home()
 	sendData(&ss);
 }
 
+void trapezoidal_init()
+{
+
+	std::ostringstream ss;
+	ss << "m 50" ;
+	sendData(&ss);
+}
 
 bool isNear(float *firstXYZ, float *secondXYZ) //This function returns if the 2 given cartesian points are near or not.
 // It doesn't take z in account (now but can be changed). thresholdNearDistance can be changed to change the parameter.
@@ -674,6 +683,7 @@ void pick_and_place (float *currentDetails, float *finalDetails,std::vector <int
 //	std::cout << "initialise hand" << std::endl;
 //
 	initialise_hand();
+	trapezoidal_init();
 	goToJointPosition(currentIntermediateJointPosition);
 	goToJointPosition(currentJp);
 	close_grasp();
@@ -686,10 +696,11 @@ void pick_and_place (float *currentDetails, float *finalDetails,std::vector <int
 	goToJointPosition(finalIntermediateJointPosition);
 	goToJointPosition(finalJp);
 
-	open_grasp();//close_grasp();
+	trapezoidal_init();
+	//close_grasp();
 	goToJointPosition(finalIntermediateJointPosition);
 	goToJointPosition(finalJpJ20);
-
+	open_grasp();
 	updateObservationMatrix(observationMatrix,locationOfId(currentMarkerId,objectId),finalDetails);
 	std::cout << "updated matrix" << std::endl << observationMatrix << std::endl;
 	//	close_spread();

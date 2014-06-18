@@ -1,0 +1,12 @@
+/home/niladri-64/module_heisenberg/Inside_WAM/build/CMakeFiles/FinalShow.dir
+/home/niladri-64/module_heisenberg/Inside_WAM/build/CMakeFiles/ex12.dir
+/home/niladri-64/module_heisenberg/Inside_WAM/build/CMakeFiles/ex13.dir
+/home/niladri-64/module_heisenberg/Inside_WAM/build/CMakeFiles/grasp_move_hand.dir
+/home/niladri-64/module_heisenberg/Inside_WAM/build/CMakeFiles/hand_control_complete.dir
+/home/niladri-64/module_heisenberg/Inside_WAM/build/CMakeFiles/hand_test.dir
+/home/niladri-64/module_heisenberg/Inside_WAM/build/CMakeFiles/move_hand.dir
+/home/niladri-64/module_heisenberg/Inside_WAM/build/CMakeFiles/move_hand2.dir
+/home/niladri-64/module_heisenberg/Inside_WAM/build/CMakeFiles/nilex01.dir
+/home/niladri-64/module_heisenberg/Inside_WAM/build/CMakeFiles/oh_captain_my_captain.dir
+/home/niladri-64/module_heisenberg/Inside_WAM/build/CMakeFiles/tact.dir
+/home/niladri-64/module_heisenberg/Inside_WAM/build/CMakeFiles/testMain.dir

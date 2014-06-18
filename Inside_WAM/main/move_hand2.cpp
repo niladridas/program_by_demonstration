@@ -73,17 +73,29 @@ void moveToStr(systems::Wam<DOF>& wam, math::Matrix<R,C, Units>* dest,
 
 void printMenu() {
 	printf("Commands:\n");
-	printf("  j  Enter a joint position destination\n");
-	printf("  h  Move to the home position\n");
 	printf("  p  Enter a tool position destination\n");
-	printf("  o  Open and Close the hand\n");
-	printf (" M Sending messages\n");
+	printf("  h  Move to the home position\n");
+	printf("  o  Only Initialize\n");
+	printf("  a  Only close spread\n");
+	printf("  c  Only close grasp\n");
+	printf("  b  Trapezoidal Move\n");
+	printf("  d  Only open spread\n");
+	printf("  e  Only open grasp\n");
+	printf("  j  Enter a joint position destination\n");
 	printf("  i  Idle (release position/orientation constraints)\n");
 	printf("  q  Quit\n");
 	printf("  f  Calibrate using standard joint positions\n");
+	printf("  t  trapezoidal movement grasp 30 degrees\n");
+	printf("  m  Custom trapezoidal move\n");
+
+//	printf("  u trapezoidal movement ")
+
+
 
 }
-
+float angle_radian;
+float angle_degree;
+std::istringstream iss2;
 
 
 template<size_t DOF>
@@ -128,13 +140,16 @@ int wam_main(int argc, char** argv, ProductManager& pm, systems::Wam<DOF>& wam) 
 
 
 	while (going) {
+		std::cout << "Whiel loop starts" << std::endl;
 //-----------------------------------------------------------------------------------
  ssize_t bytes_recieved;
     char incomming_data_buffer[1000];
     bytes_recieved = recv(new_sd, incomming_data_buffer,1000, 0);
+	std::cout << bytes_recieved << std::endl;
 //    if (bytes_recieved == 0) std::cout << "host shut down." << std::endl ;
 //    if (bytes_recieved == -1)std::cout << "recieve error!" << std::endl ;
     incomming_data_buffer[bytes_recieved] = '\0';
+    std::cout << incomming_data_buffer << std::endl;
 
     const char *msg = "Niladri Das I am the Server";
     const char *msg1 = "Press f exactly four times";
@@ -191,26 +206,100 @@ int wam_main(int argc, char** argv, ProductManager& pm, systems::Wam<DOF>& wam) 
 			std::cout << "sending back a message" << std::endl;
 			bytes_sent = send(new_sd, msg, len,0);
 			break;
-               case 'o':
-			hand->initialize();
-			hand->close(Hand::GRASP);
-			hand->open(Hand::GRASP);
-          		hand->close(Hand::SPREAD);
-			break;
+		case 'o':
+					hand->initialize();
+		//			hand->close(Hand::GRASP);
+		//			hand->open(Hand::GRASP);
+		//		   	hand->close(Hand::SPREAD);
+		//		   	hand->trapezoidalMove(Hand::jp_type(M_PI/2.0),1, Hand::GRASP);
+		//		   	hand->trapezoidalMove(Hand::jp_type(M_PI/2.0), Hand::GRASP);
+					std::cout << "sending back a message..." << std::endl;
+					bytes_sent = send(new_sd, msg, len, 0);
+
+					break;
+
+		case 'a':
+		//			hand->initialize();
+					hand->close(Hand::SPREAD);
+		//			hand->close(Hand::GRASP);
+					std::cout << "sending back a message..." << std::endl;
+								bytes_sent = send(new_sd, msg, len, 0);
+
+					break;
+
+				case 'c':
+		//			hand->initialize();
+					hand->close(Hand::GRASP);
+					std::cout << "sending back a message..." << std::endl;
+								bytes_sent = send(new_sd, msg, len, 0);
+
+					break;
+
+				case 'd':
+			//					hand->initialize();
+								hand->open(Hand::SPREAD);
+								std::cout << "sending back a message..." << std::endl;
+											bytes_sent = send(new_sd, msg, len, 0);
+
+								break;
+
+					case 'e':
+			//							hand->initialize();
+										hand->open(Hand::GRASP);
+										std::cout << "sending back a message..." << std::endl;
+													bytes_sent = send(new_sd, msg, len, 0);
+
+										break;
+
+					case 'b':
+						hand->trapezoidalMove(Hand::jp_type(M_PI/2.0), Hand::GRASP);
+						std::cout << "sending back a message..." << std::endl;
+									bytes_sent = send(new_sd, msg, len, 0);
+
+						break;
+
+
+					case 't':
+						hand->trapezoidalMove(Hand::jp_type((M_PI)/6.0), Hand::GRASP);
+						std::cout << "sending back a message..." << std::endl;
+						bytes_sent = send(new_sd, msg, len, 0);
+
+											break;
+
+					case 'm':
+					//			temp_str = line.substr(2);
+								iss2.clear();
+								iss2.str("");
+								iss2.str(line.substr(2)) ;
+							    iss2 >> angle_degree;
+					//			std::cin >> angle_degree;
+								angle_radian = angle_degree*(M_PI/180);
+								hand->trapezoidalMove(Hand::jp_type(angle_radian), Hand::GRASP);
+								std::cout << angle_degree << std::endl;
+								bytes_sent = send(new_sd, msg, len, 0);
+								break;
+
 
 		case 'q':
 		case 'x':
 			printf("Quitting.\n");
 			going = false;
+			std::cout << "sending back a message..." << std::endl;
+						bytes_sent = send(new_sd, msg, len, 0);
+
 			break;
 
 		default:
 			if (line.size() != 0) {
 				printf("Unrecognized option.\n");
+				std::cout << "sending back a message..." << std::endl;
+							bytes_sent = send(new_sd, msg, len, 0);
+
 				printMenu();
 			}
 			break;
 		}
+		std::cout << "While loop complete" << std::endl;
 	}
 
 
