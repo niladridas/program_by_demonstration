@@ -1,5 +1,5 @@
 /*
-* Created on: June 13, 2014
+* Created on: June 13, 2014 // And updated a lot more times after that.
 * Author: Ankit Pensia
 
 A large number of functions are created that so that informaton exchange between robot and machine can be done in abstractive level.
@@ -43,50 +43,25 @@ locationOfId[MarkerId] = objectPId
 #include <fstream>
 #include <math.h>
 #include <iostream>
-#include <vector>
-#include <math.h>
-#include <cmath>
-#include <Eigen/Dense>
-#include <Eigen/SVD>
-#include <Eigen/LU>
 #include <Eigen/Geometry>
 #include<fstream>
 #include <string>
 #include <boost/math/constants/constants.hpp>
 #include <time.h>
 
-#include <iostream>
-#include <vector>
-#include <math.h>
-#include <cmath>
-#include <Eigen/Dense>
-#include <Eigen/SVD>
-#include <Eigen/LU>
-#include <Eigen/Geometry>
-#include<fstream>
-#include <string>
-#include <boost/math/constants/constants.hpp>
-
-
 //socket files
 
 #include <unistd.h>
-#include <iostream>
 #include <cstring>
 #include <sys/socket.h>
 #include <netdb.h>
-#include <string>
-#include<fstream>
 
 
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/io/pcd_io.h>
 #include <boost/thread/thread.hpp>
-//#include <pcl/filters/passthrough.h>
-#include <string>
 #include <sstream>
-#include <iostream>
 #include <boost/thread/thread.hpp>
 #include <pcl/common/common_headers.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -94,34 +69,20 @@ locationOfId[MarkerId] = objectPId
 #include<pcl/common/geometry.h>
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <limits>
-#include <fstream>
-#include <vector>
 #include <Eigen/Core>
 #include <pcl/point_cloud.h>
-//#include <pcl/kdtree/kdtree_flann.h>
-//#include <pcl/filters/passthrough.h>
 #include <pcl/features/fpfh.h>
 #include <pcl/registration/ia_ransac.h>
 #include <pcl/ModelCoefficients.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
-//#include <pcl/filters/extract_indices.h>
-//#include <pcl/filters/voxel_grid.h>
-//#include <pcl/features/normal_3d.h>
-//#include <pcl/kdtree/kdtree.h>
-//#include <pcl/sample_consensus/method_types.h>
-//#include <pcl/sample_consensus/model_types.h>
-//#include <pcl/segmentation/sac_segmentation.h>
-//#include <pcl/segmentation/extract_clusters.h>
 #include "opencv2/highgui/highgui.hpp"
 #include<opencv/cv.h>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <iostream>
 #include<cmath>
-#include<math.h>
 #include<stdlib.h>
-#include <iostream>
 #include <aruco/aruco.h>
 #include <aruco/cvdrawingutils.h>
 #include <opencv2/highgui/highgui.hpp>
@@ -134,23 +95,85 @@ using namespace std;
 
 using namespace aruco;
 using namespace cv;
-using namespace Eigen;
 
 //#define PI 3.14159265;
 #define PiValue 3.14159265;
 
-Vector4f Red_in_camera, Green_in_camera, Center_in_camera, Red_in_robot, Green_in_robot, Centre_in_robot ;
-Vector4f infoMarker;
-Vector2f Angle_vector, norm_angle_vector;
-int pcl_count= 0;
-int markerMID;
+
+
+Matrix4f frame_transformation(float A_f, float alpha_f, float D_f, float Theta_f) // Yes It transfroms the points . It is required in func_inverse_sol and func_multi_sol . So it must
+//be above their include!!
+{
+	Matrix4f T;
+	T << cos(Theta_f), -sin(Theta_f)*cos(alpha_f), sin(Theta_f)*sin(alpha_f), A_f*cos(Theta_f),
+	     sin(Theta_f), cos(Theta_f)*cos(alpha_f), -cos(Theta_f)*sin(alpha_f), A_f*sin(Theta_f),
+	     0,            sin(alpha_f),               cos(alpha_f),              D_f,
+	     0,            0,                          0,                         1;
+	return T;
+}
+
+
+#include "func_inverse_kine.h" // these are functions which help in solving Inverse Kinematic solution
+#include "func_multi_sol.h" // this function returns a solution set of joint positions with some error threshhold which can be used to reach at final point in given hand's orientations
+
+#define PI 3.141592653589793
+float thresholdNearDistance = 0.14; // if a object A is to be places at location X.  Robot sees if there is any object B already present in the radius of thresholdNearDistance with center at X.
+									// this is used to avoid obstacle. It is used in isNear() function.
+float thresholdNearDistance_obstacle = 0.21; //If some object B is present at location X, then program searches for a random point which is empty. To see if it is empty, like above a radius parameter is used.
+						// this radius is thresholdNearDistance_obstacle and it is larger than thresholdNearDistance because of the object's dimension. Basically it should put object in comparatively free space.
+						// it is used in isNear_obstacle() which is called by isObjectAt_obstacle from create dummy position
+float zOffset = 0.13; // This is the vertical distance above which robot's end effector must reach. this offset is because of the dimension of hand(palm) is not included in the end effector of arm and
+		// to grasp something, there should be a little difference between object's height and palm.
+	// to reach at (X Y Z ) , inverse kinematics solution is found for (X Y Z+zOffset)
+float zOffsetIntermediate = 0.10; // To reach X  Y Z+zoffset , it first reaches X Y Z+zOffset+zOffsetIntermediate , so that it goes vertically down from there and doesn't touch or disturb nearby objects, which can happen if this vertical downward motion is not accounted for.
+float thresholdHeightChange = 0.07; // this distance is used in isNear(). when an object is put on top of another object, so the distance between their position will be less than thresholdNearDistance. so it will be say that another object is present  and it will displace that object which is not desired.
+		// to overcome that another check is placed which check that if there is sufficient difference in height, than the object can be placed at that position.(i.e. top of the object)
+		// this threshold also overcomes the noise in the z positoins of the object
+
+
+// vague description of the following functions is given here. Elaborate explaination , if any will be given in the function definition itself.
+
+void sendData(std::ostringstream *osstring); // send the message to socket
+void close_grasp();
+void open_grasp();
+void send_home();
+void  socket(char *msg); // it sends the message to robot via socket. It sends the message and then waits to listen from robot.
+void trapezoidal_close();
+void close_spread();
+void trapezoidal_init();
+void goToJointPosition(float *jointPosition);
+void waitForEnter(); // yup, it waits for enter from user. it is used in sendData()
+void calculateJpForPickAndPlace(float *initialDetails,float *currentJointPosition, float *jointPositionFinal,float *intermediateJointPosition,float *jointPositionj20);
+// Calculates total 3 optimum joint positions for 3 points ---> initialiseHandPosition  // zOffsetIntermediatePosition and // zOffset position .
+// some kind of optimum in sense, that it minimizes certain difference. This can be changed as required
+//in these joint positions  and the current joint position position before calling this function.
+bool isNear(float *firstXYZ, float *secondXYZ) ;//This function returns if the 2 given cartesian points are near or not.
+bool isNear_obstacle(float *firstXYZ, float *secondXYZ) ; // called while searching for Dummy position. it uses different threshold than isNear and doesn't take height in consideration
+bool isObjectAt(float *finalXYZ, std::vector <int> objectId,MatrixXf observationMatrix, int *targetObjectPID); // checks if there is an object at finalXyz, if present than it updates  targetObjectPID with that object PID
+bool isObjectAt_obstacle(float *finalXYZ, std::vector <int> objectId,MatrixXf observationMatrix, int *targetObjectPID); // called while looking for dummy position.
+bool isAnotherObjectAt(float *finalXYZ, std::vector <int> objectId,MatrixXf observationMatrix, int *targetObjectPID, int currentPID); // it ignores the case when the object at that location is currentPID-Object
+int locationOfId(int targetObjectMarkerId,std::vector <int> objectId); // gives the objectPID from objectMarkerId
+void createDummyPositon(float *dummyXYZ, std::vector <int> objectId,MatrixXf observationMatrix, int *targetObjectPID); // finds a dummy position where an obstacle can be put. int *targetObjectPID is not required and should be omitted in the next update. It was only passed because it is used in isObjectAt_obstacle .
+//  Maybe I will remove it now if there is time to check if it is working even without it.
+void updateObservationMatrix(MatrixXf& observationMatrix, int objectMID,int objectPID); // it updates the location of object with objectMID and objectPID in the observationMatrix using KInect // OPenNI Grabber
+void createFinalVector(float *finalXYZ, float angle, float *output); // It updates the an array float*output of 9 length which is required to find the inverse kinematics solution.
+// z of float* output array (for which IK sol. are found) is changed by zOffset due to afore-mentioned reasons
+void pick_and_place (float *currentDetails, float *finalDetails,std::vector <int> objectId,MatrixXf& observationMatrix,int currentMarkerId,float *currentJointPosition);
+// This is the heart of this program. It does a whole lot of things
+void initialiseMatrixWithZero(MatrixXf& observationMatrix, int rows, int cols);
+
+Vector4f Red_in_camera, Green_in_camera, Center_in_camera, Red_in_robot, Green_in_robot, Centre_in_robot ; // Vectors which stores the position of red ,green and center points of the the marker in camera frames and robot frame
+Vector4f infoMarker; // It stores the info of desired merker object and is used to update the observation matrix
+Vector2f Angle_vector, norm_angle_vector; // used for something
+int pcl_count= 0; // Counts the no. of times the info of desiredMarker is updated in the infoMarker, it is used as a flag to return from openNigrabber.
+// It is again set to 0 when another update of position is required i.e. updateObservationMatrix is called.
+int markerMID; // used to tell the save_cloud() about the marker id for which location update is required.
 float angle;
 const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGBA> );
-//void CallBackFunc(int event, int x, int y, int flags, void* userdata);
+//void CallBackFunc(int event, int x, int y, int flags, void* userdata); // this callback function is not required
 
 Eigen::Matrix4f temp_trans;
 std::ofstream f_tmp;
-//void CallBackFunc(int event, int x, int y, int flags, void* userdata);
 class SimpleOpenNIViewer
  {
    	public:
@@ -160,8 +183,6 @@ class SimpleOpenNIViewer
 
    void save_cloud(int markerID)
 	{
-
-
 
 	   for(int k = 0 ; k < Markers.size(); k++)
 	   {
@@ -180,11 +201,12 @@ class SimpleOpenNIViewer
 		   Angle_vector << (Red_in_robot - Green_in_robot)(0), (Red_in_robot - Green_in_robot)(1);
 		   norm_angle_vector= Angle_vector.normalized();
 		   angle = atan2(norm_angle_vector(1),norm_angle_vector(0))* 180/PiValue;
+		   // We are taking onkly 0 to 180 because some times error comes like 
+		   // at t =1 , angle is -176
+		   // and t=2, angle is +177
+		   // it can be removed easily later
 		   if(angle<0)
 			   	   angle=-angle;
-//   		 f1 <<  time_stamp << " " << Centre_in_robot(0) << " " << Centre_in_robot(1) << " " <<  Centre_in_robot(2) << " " << angle << std::endl;
-
-//	   		  std::cout << "Marker found with id = " << markerID << " " << Markers[k].id << " " << pcl_count<< std::endl;
 
 		   if(markerID==Markers[k].id)
 		   {
@@ -289,60 +311,13 @@ class SimpleOpenNIViewer
 //
 //    	   }
 
-Matrix4f frame_transformation(float A_f, float alpha_f, float D_f, float Theta_f)
-{
-	Matrix4f T;
-	T << cos(Theta_f), -sin(Theta_f)*cos(alpha_f), sin(Theta_f)*sin(alpha_f), A_f*cos(Theta_f),
-	     sin(Theta_f), cos(Theta_f)*cos(alpha_f), -cos(Theta_f)*sin(alpha_f), A_f*sin(Theta_f),
-	     0,            sin(alpha_f),               cos(alpha_f),              D_f,
-	     0,            0,                          0,                         1;
-	return T;
-}
-
-
-#include "func_inverse_kine.h"
-#include "func_multi_sol.h"
-
-#define PI 3.141592653589793
-float thresholdNearDistance = 0.14;
-float thresholdNearDistance_obstacle = 0.21;
-float zOffset = 0.13;
-float zOffsetIntermediate = 0.10;
-float thresholdHeightChange = 0.07;
-
-void sendData(std::ostringstream *osstring);
-void close_grasp();
-void open_grasp();
-void send_home();
-void sendData(std::ostringstream *osstring);
-void  socket(char *msg);
-void trapezoidal_close();
-void close_spread();
-void trapezoidal_init();
-void goToJointPosition(float *jointPosition);
-void waitForEnter();
-void calculateJpForPickAndPlace(float *initialDetails,float *currentJointPosition, float *jointPositionFinal,float *intermediateJointPosition,float *jointPositionj20);
-bool isNear(float *firstXYZ, float *secondXYZ) ;//This function returns if the 2 given cartesian points are near or not.
-bool isNearRand(float *firstXYZ, float *secondXYZ) ;
-bool isObjectAt(float *finalXYZ, std::vector <int> objectId,MatrixXf observationMatrix, int *targetObjectPID);
-bool isObjectAtRand(float *finalXYZ, std::vector <int> objectId,MatrixXf observationMatrix, int *targetObjectPID);
-bool isAnotherObjectAt(float *finalXYZ, std::vector <int> objectId,MatrixXf observationMatrix, int *targetObjectPID, int currentPID);
-int locationOfId(int targetObjectMarkerId,std::vector <int> objectId);
-void createDummyPositon(float *dummyXYZ, std::vector <int> objectId,MatrixXf observationMatrix, int *targetObjectPID);
-void updateObservationMatrix(MatrixXf& observationMatrix, int objectMID,int objectPID);
-void createFinalVector(float *finalXYZ, float angle, float *output);
-void pick_and_place (float *currentDetails, float *finalDetails,std::vector <int> objectId,MatrixXf& observationMatrix,int currentMarkerId,float *currentJointPosition);
-
-
-
-
 void waitForEnter() {
 	std::string line;
 	std::getline(std::cin, line);
 }
 
 
-void updateCurrentJointPosition(float *prevJointPosition, float *finalPosition)
+void updateCurrentJointPosition(float *prevJointPosition, float *finalPosition) // updates the prevjointposition with finalPosition. called from pick_and_place
 {
 	prevJointPosition[0]=	finalPosition[0];
 	prevJointPosition[1]=	finalPosition[1];
@@ -357,33 +332,30 @@ void updateCurrentJointPosition(float *prevJointPosition, float *finalPosition)
 void calculateJpForPickAndPlace(float *initialDetails,float *currentJointPosition, float *jointPositionFinal,float *intermediateJointPosition,float *jointPositionj20)
 {
 
-float  cartesianAndOrientation[9];
-cartesianAndOrientation[0] = initialDetails[0];
-cartesianAndOrientation[1] = initialDetails[1];
-cartesianAndOrientation[2] = initialDetails[2];
-cartesianAndOrientation[3] = 0; //initialDetails[3]
+float  cartesianAndOrientation[9]; // Creating the 9-length array to find inverse kinematics solution. It is just copy pasting from initialDetails
+cartesianAndOrientation[0] = initialDetails[0];cartesianAndOrientation[1] = initialDetails[1];cartesianAndOrientation[2] = initialDetails[2];
+cartesianAndOrientation[3] = 0; //initialDetails[3] 
 cartesianAndOrientation[4] = 0;//initialDetails[4]
 cartesianAndOrientation[5] = -1;//initialDetails[5]
-cartesianAndOrientation[6] = initialDetails[6];
-cartesianAndOrientation[7] = initialDetails[7];
-cartesianAndOrientation[8] = initialDetails[8];
+cartesianAndOrientation[6] = initialDetails[6];cartesianAndOrientation[7] = initialDetails[7];cartesianAndOrientation[8] = initialDetails[8];
+// Zoffset is already added in above initialDetails(by function create final vector)
 
 std::cout << "Calculating jp for  cartesian " << cartesianAndOrientation[0] << "   " << cartesianAndOrientation [1] <<"   "<<  cartesianAndOrientation[2] << std::endl;
 //std::cout << "  4 to 6  " << cartesianAndOrientation[3] << "   " << cartesianAndOrientation [4] <<"   "<<  cartesianAndOrientation[5] << std::endl;
 //std::cout << "  orien " << cartesianAndOrientation[6] << "   " << cartesianAndOrientation [7] <<"   "<<  cartesianAndOrientation[8] << std::endl;
 
-float phi_search1[2];
-int solutionCounter1[1];
-char fileName[100];
+float phi_search1[2]; //phi_search1 it calculates phi search min and max for (finalXYZ+zoffest) to be used in multi_sol 
+int solutionCounter1[1]; // no. of solutions calculated
+char fileName[100]; // finename where the solutions are stored 
 	func_inverse_kine(cartesianAndOrientation,phi_search1);
 //std::cout <<" phi search " << phi_search[0] << phi_search[1] << std::endl;
 	func_multi_sol(cartesianAndOrientation,phi_search1,solutionCounter1,fileName);
 std::cout << "Solution counter " << *solutionCounter1 << " " << fileName << std::endl;
 
-float  cartesianAndOrientationIntermediate[9];
+float  cartesianAndOrientationIntermediate[9]; // calculate IK jp for that intermediate position
 cartesianAndOrientationIntermediate[0] = initialDetails[0];
 cartesianAndOrientationIntermediate[1] = initialDetails[1];
-cartesianAndOrientationIntermediate[2] = initialDetails[2]+zOffsetIntermediate;
+cartesianAndOrientationIntermediate[2] = initialDetails[2]+zOffsetIntermediate; // that intermediate position
 cartesianAndOrientationIntermediate[3] = 0; //initialDetails[3]
 cartesianAndOrientationIntermediate[4] = 0;//initialDetails[4]
 cartesianAndOrientationIntermediate[5] = -1;//initialDetails[5]
@@ -397,9 +369,9 @@ std::cout << "Calculating jp for  cartesian " << cartesianAndOrientationIntermed
 //std::cout << "  4 to 6  " << cartesianAndOrientation[3] << "   " << cartesianAndOrientation [4] <<"   "<<  cartesianAndOrientation[5] << std::endl;
 //std::cout << "  orien " << cartesianAndOrientation[6] << "   " << cartesianAndOrientation [7] <<"   "<<  cartesianAndOrientation[8] << std::endl;
 
-float phi_search2[2];
-int solutionCounter2[1];
-char fileNameIntermediate[100];
+float phi_search2[2]; // for intermediate position
+int solutionCounter2[1]; // no.of sol for intermediate positions
+char fileNameIntermediate[100]; //same as before
 	func_inverse_kine(cartesianAndOrientationIntermediate,phi_search2);
 //std::cout <<" phi search " << phi_search[0] << phi_search[1] << std::endl;
 	func_multi_sol(cartesianAndOrientationIntermediate,phi_search2,solutionCounter2,fileNameIntermediate);
@@ -407,17 +379,19 @@ std::cout << "Solution counter " << *solutionCounter2 << " " << fileNameIntermed
 
 
 if(*solutionCounter1==0 || *solutionCounter2==0)
-	{std::cout << "No solutions found" << std::endl;
+	{
+		std::cout << "No solutions found for given position. MayDay MayDay. Its time to go home. Just press enter" << std::endl; // since no sultion is present
 	waitForEnter();
 	open_grasp();
 	close_spread();
 	trapezoidal_close();
 	send_home();
+	return;
 	}
 
 
+MatrixXf solutionSpace (*solutionCounter1,7); // Storing the solution for first in Matrix solutionSPace
 std::ifstream infile(fileName);
-MatrixXf solutionSpace (*solutionCounter1,7);
 std::string line;
 
 int i = 0;
@@ -442,8 +416,8 @@ while (std::getline(infile, line))
       i ++;
       }
 
+MatrixXf solutionSpaceIntermediate (*solutionCounter2,7); // Storing the solution for intermediate position in Matrix solutionSpaceIntermediate
 std::ifstream infileIntermediate(fileNameIntermediate);
-MatrixXf solutionSpaceIntermediate (*solutionCounter2,7);
 std::string lineIntermediate;
 
 i = 0;
@@ -468,8 +442,13 @@ while (std::getline(infileIntermediate, lineIntermediate))
       i ++;
       }
 
-//std::cout << solutionSpace << std::endl;
 
+// Now we have both solutions for finalEndeffector position and the intermediate.
+      // Now we have o search the best one. Logic used here is that there is minimum change in joint angles of some particular joint positions 
+// Proposed in future:- A different function for this and maybe a better way to find optimum solution.
+
+// First we find the solution for final_end_effector position. We have currentJointPosition in an array and then we go through all solutions available for that
+// and then choose the one in which error is minimum. 
 float min = 99999999999;
 float dummy0,dummy1,dummy2,dummy3,dummy4,dummy5,dummy6;
 int index = 0;
@@ -477,23 +456,14 @@ float error1,error2,error3,error4,error5,error6,error0;
 float min_error=99999,curr_error;
 for(i =0;i < *solutionCounter1; i++)
 	{
-	//std::cout << i << "  " << solutionSpace(i,0) << " " << min << std::endl;
-	 dummy0 = solutionSpace(i,0);
-	 dummy1 = solutionSpace(i,1);
-	 dummy2 = solutionSpace(i,2);
-	 dummy3 = solutionSpace(i,3);
-	 dummy4 = solutionSpace(i,4);
-	 dummy5 = solutionSpace(i,5);
-	 dummy6 = solutionSpace(i,6);
-
-    error0 = dummy0- currentJointPosition[0];
-	 error1 = dummy1- currentJointPosition[1];
-	 error2 = dummy2- currentJointPosition[2];
-	 error3 = dummy3- currentJointPosition[3];
-	 error4 = dummy4- currentJointPosition[4];
-	 error5 = dummy5- currentJointPosition[5];
-	 error6 = dummy6- currentJointPosition[6];
-
+    error0 = solutionSpace(i,0);- currentJointPosition[0];
+	 error1 = solutionSpace(i,1);- currentJointPosition[1];
+	 error2 = solutionSpace(i,2);- currentJointPosition[2];
+	 error3 = solutionSpace(i,3);- currentJointPosition[3];
+	 error4 = solutionSpace(i,4);- currentJointPosition[4];
+	 error5 = solutionSpace(i,5);- currentJointPosition[5];
+	 error6 = solutionSpace(i,6);- currentJointPosition[6];
+	 		// making them absolute. I just don't like the fabs :O .
 	 if(error0<0)
 		 error0=-error0;
 	 if(error1<0)
@@ -509,8 +479,7 @@ for(i =0;i < *solutionCounter1; i++)
 	 if(error6<0)
 		 error6=-error6;
 
-	 curr_error = 0.3*error0 + error4 + 0.3*error2 + error6 ;//error3+error4+error5+error6;
-	 //	 std::cout << "curr_error " << curr_error<< "and i = " << i << " " << error4 << " " << error6<< std::endl;
+	 curr_error = 0.3*error0 + error4 + 0.3*error2 + error6 ;//Giving more weghtage to joint angle 5 and 7 than joint angle 1 and joint angle 3
 	 	 if(curr_error < min_error)
 	 		 {
 	 //		 std::cout << "curr_error " << curr_error<< "and i = " << i << std::endl;
@@ -519,44 +488,35 @@ for(i =0;i < *solutionCounter1; i++)
 	 		 index= i;
 	 			 min_error = curr_error;
 	 		 }
-//	float dummy = 0.4*dummy0 +dummy2 ; //+ 0.4*dummy6;
-//	if(dummy < min)
-//		{
-//		index = i;
-//		min = dummy;
-//		}
+
 	}
 
-std::cout << "index = " << index << std::endl;
+std::cout << "index for best solution in final xyz is  = " << index << std::endl;
 
 
-
+// Updating the jointPosition with index found.
 for(i=0;i<7;i++)
 {
 	jointPositionFinal[i]= solutionSpace(index,i);
 	jointPositionj20[i] = solutionSpace(index,i);
 	}
 
-jointPositionj20[1] = 0;
+jointPositionj20[1] = 0; // this is the hand-initialise position. third joint angle is 0.
 
 min_error=99999;
 int indexIntermediate;
+
+// NOw that finalJointPOsition has been calculated. Now we search for that solution for indexIntermediate for which difference is minimum from finaljointPosition
 for(i =0;i < *solutionCounter2; i++)
 	{
-	 dummy0 = solutionSpaceIntermediate(i,0);
-	 dummy1 = solutionSpaceIntermediate(i,1);
-	 dummy2 = solutionSpaceIntermediate(i,2);
-	 dummy3 = solutionSpaceIntermediate(i,3);
-	 dummy4 = solutionSpaceIntermediate(i,4);
-	 dummy5 = solutionSpaceIntermediate(i,5);
-	 dummy6 = solutionSpaceIntermediate(i,6);
-	 error0 = dummy0- jointPositionFinal[0];
-	 error1 = dummy1- jointPositionFinal[1];
-	 error2 = dummy2- jointPositionFinal[2];
-	 error3 = dummy3- jointPositionFinal[3];
-	 error4 = dummy4- jointPositionFinal[4];
-	 error5 = dummy5- jointPositionFinal[5];
-	 error6 = dummy6- jointPositionFinal[6];
+
+	 error0 = solutionSpaceIntermediate(i,0)- jointPositionFinal[0];
+	 error1 = solutionSpaceIntermediate(i,1)- jointPositionFinal[1];
+	 error2 = solutionSpaceIntermediate(i,2)- jointPositionFinal[2];
+	 error3 = solutionSpaceIntermediate(i,3)- jointPositionFinal[3];
+	 error4 = solutionSpaceIntermediate(i,4)- jointPositionFinal[4];
+	 error5 = solutionSpaceIntermediate(i,5)- jointPositionFinal[5];
+	 error6 = solutionSpaceIntermediate(i,6)- jointPositionFinal[6];
 	 if(error0<0)
 		 error0=-error0;
 	 if(error1<0)
@@ -572,8 +532,8 @@ for(i =0;i < *solutionCounter2; i++)
 	 if(error6<0)
 		 error6=-error6;
 
-	 curr_error = error0 + 0.9*error4 + error2 + error6 ;//error3+error4+error5+error6;
-//	 std::cout << "curr_error " << curr_error<< "and i = " << i << " " << error4 << " " << error6<< std::endl;
+	 curr_error = error0 + 0.9*error4 + error2 + error6 ;//more weightage to joint angle 1 and joint angle 3 in this case than previous one. We don't j1 and j3 to change much
+													 // during this zoffsetIntermediate length.;
 	 if(curr_error < min_error)
 		 {
 //		 std::cout << "curr_error " << curr_error<< "and i = " << i << std::endl;
@@ -585,7 +545,8 @@ for(i =0;i < *solutionCounter2; i++)
 	 }
 
 std::cout << "index intermediate = " << indexIntermediate << std::endl;
-for(i=0;i<7;i++)
+
+for(i=0;i<7;i++)	// Updating the index intermediate
 {
 	intermediateJointPosition[i]= solutionSpaceIntermediate(indexIntermediate,i);
 }
@@ -722,15 +683,16 @@ void goToJointPosition(float *jointPosition)
 	sendData(&ss);
 }
 
+
 bool isNear(float *firstXYZ, float *secondXYZ) //This function returns if the 2 given cartesian points are near or not.
-// It doesn't take z in account (now but can be changed). thresholdNearDistance can be changed to change the parameter.
+// read comment about thresholdNearDistance in its declaration 
 {
 	Vector3f relativeXYZ;
 	relativeXYZ(0)=firstXYZ[0]-secondXYZ[0];
 	relativeXYZ(1)=firstXYZ[1]-secondXYZ[1];
 	relativeXYZ(2)=firstXYZ[2]-zOffset-secondXYZ[2];
 	std::cout << "relative vector  " << relativeXYZ(0) << " " << relativeXYZ(1) << " " << relativeXYZ(2)  <<  std::endl;
-	if(relativeXYZ(2) >=thresholdHeightChange || relativeXYZ(2) <= -thresholdHeightChange  )
+	if(relativeXYZ(2) >=thresholdHeightChange || relativeXYZ(2) <= -thresholdHeightChange  ) // read comment about thresholdHeightChange in it declaration		
 	{
 		std::cout << "Far because of height " << relativeXYZ(2) << std::endl;
 		return false;
@@ -746,7 +708,9 @@ bool isNear(float *firstXYZ, float *secondXYZ) //This function returns if the 2 
 	return false;
 }
 
-bool isNearRand(float *firstXYZ, float *secondXYZ) // A dummy function made just because I didnt want to print all the distances when creating dummy loccation.
+bool isNear_obstacle(float *firstXYZ, float *secondXYZ) // //This function returns if the 2 given cartesian points are near or not with different paramter as before.
+// read comment about  thresholdNearDistance_obstacle in its declaration 
+// Also doesnt print like previous function. 
 {
 	Vector2f relativeXYZ;
 	relativeXYZ(0)=firstXYZ[0]-secondXYZ[0];
@@ -764,9 +728,10 @@ bool isNearRand(float *firstXYZ, float *secondXYZ) // A dummy function made just
 
 
 bool isObjectAt(float *finalXYZ, std::vector <int> objectId,MatrixXf observationMatrix, int *targetObjectPID)
-//A function to check if there is any object At finalXYZ.
+//A function to check if there is any object At finalXYZ. it calls isNear function with each object's X Y Z and given X Y Z
 //objectId is a vector which transforms from the object indices in the program to Their MArker Id.
 // objecctId[from 0 to no of object] = their marker id like 12,24,44.
+// it updates *targetObjectPID with the PID of object found near
 {
 	int alpha;
 	float alphaXYZ[3];
@@ -787,8 +752,8 @@ bool isObjectAt(float *finalXYZ, std::vector <int> objectId,MatrixXf observation
 return false;
 }
 
-bool isObjectAtRand(float *finalXYZ, std::vector <int> objectId,MatrixXf observationMatrix, int *targetObjectPID)
-//Same function as before but calls isNearRandom so that it doesnt print every loop
+bool isObjectAt_obstacle(float *finalXYZ, std::vector <int> objectId,MatrixXf observationMatrix, int *targetObjectPID)
+//Same function as before but calls isNear_obstacle 
 {
 	int alpha;
 	float alphaXYZ[3];
@@ -798,7 +763,7 @@ bool isObjectAtRand(float *finalXYZ, std::vector <int> objectId,MatrixXf observa
 			alphaXYZ[0]=observationMatrix(alpha,1);
 			alphaXYZ[1]=observationMatrix(alpha,2);
 			alphaXYZ[2]=observationMatrix(alpha,3);
-			if(isNearRand(finalXYZ,alphaXYZ))
+			if(isNear_obstacle(finalXYZ,alphaXYZ))
 				{
 				*targetObjectPID = alpha;
 				return true;
@@ -836,18 +801,20 @@ return false;
 
 
 int locationOfId(int targetObjectMarkerId,std::vector <int> objectId)
-// it returns the PID from the marker id.
+// it returns the PID from the marker id and -1 if not found;
 {
 	int alpha;
 	for(alpha=0;alpha<objectId.size(); alpha++)
 		if( objectId[alpha] == targetObjectMarkerId)
 				return alpha;
 
+	std::cout << "No object found with this marker id" << std::endl;
 	return -1;
 
 }
 
 void createDummyPositon(float *dummyXYZ, std::vector <int> objectId,MatrixXf observationMatrix, int *targetObjectPID)
+// Most probably it will be updated. It uses a random search for now
 {	int seed = 1;
 	float r = ((float) rand()/ RAND_MAX) ;
 	float min_x = 0.35;
@@ -856,16 +823,16 @@ void createDummyPositon(float *dummyXYZ, std::vector <int> objectId,MatrixXf obs
 	float max_y = 0.41;
 	dummyXYZ[0]= min_x + (max_x - min_x) * r;
 	dummyXYZ[1]= min_y+ (max_y - min_y) * r;
-	dummyXYZ[2]= -0.23;
+	dummyXYZ[2]= -0.23; // this is table's height
 	int i;
-	while(isObjectAtRand(dummyXYZ,objectId,observationMatrix,targetObjectPID))
+	while(isObjectAt_obstacle(dummyXYZ,objectId,observationMatrix,targetObjectPID))
 	{
 		srand(time(NULL) + seed);
 		 r = ((float) rand()/ RAND_MAX);
 
 	dummyXYZ[0]= min_x + (max_x - min_x) * r;
 	dummyXYZ[1]= min_y+ (max_y - min_y) * r;
-	dummyXYZ[2]= -0.35;
+	dummyXYZ[2]= -0.23; // This is table's height 
 	seed = seed + 1000;
 	i++;
 	}
@@ -879,7 +846,7 @@ void updateObservationMatrix(MatrixXf& observationMatrix, int objectMID,int obje
 {
 	pcl_count=0;
 	markerMID=objectMID;
-	v.run();
+	v.run(); // calls PCL open ni grabber to update the observation matrix of the given object
 	//v.save_cloud(markerMID);
 	observationMatrix(objectPID,1)= infoMarker(0);
 	observationMatrix(objectPID,2)= infoMarker(1);
@@ -889,24 +856,8 @@ void updateObservationMatrix(MatrixXf& observationMatrix, int objectMID,int obje
 }
 void createFinalVector(float *finalXYZ, float angle, float *output)
 {
-	//if(angle <0)
-//	if(angle<0)
-//			angle = -angle;
-//	float dum1 = angle;
-//	float dum2 = 180-angle;
-//	angle = dum1;
-//	if(dum2<dum1)
-//		angle = dum2;
-//	int intAngle = int(angle);
-//if(intAngle <30)
-//	intAngle = 0;
-//else if(intAngle < 60)
-//	intAngle = 45;
-//else
-//	intAngle = 90;
-//angle = intAngle;
-
-	//angle = int(angle)%180;
+// creates that 9 length array required for IK solutions .
+	// It also adds the zOffset 
 	output[0]= finalXYZ[0];
 	output[1]= finalXYZ[1];
 	output[2]= finalXYZ[2] + zOffset;
@@ -928,10 +879,12 @@ void pick_and_place (float *currentDetails, float *finalDetails,std::vector <int
 	float finalIntermediateJointPosition[7];
 	int obstacleObjectPID[1];
 	int flag = 1;
+	// To check while there is an another object at finalXYZ . if there is an object, remove it and then proceed as usual.
+	// it uses recursion to do that .
 	while(isAnotherObjectAt(finalDetails,objectId,observationMatrix,obstacleObjectPID,locationOfId(currentMarkerId,objectId)))
 		{
 		std::cout << " Obstacle fount with id " <<  obstacleObjectPID[0] <<" "<< objectId[obstacleObjectPID[0]]  << std::endl;
-		int obstaclePID= *obstacleObjectPID;
+		int obstaclePID= *obstacleObjectPID; //obstacleObjectPID was updated in the call to isAnotherObject in while loop
 		float obstacleXYZ[3];
 		obstacleXYZ[0]=observationMatrix(obstaclePID,1);
 		obstacleXYZ[1]=observationMatrix(obstaclePID,2);
@@ -939,57 +892,71 @@ void pick_and_place (float *currentDetails, float *finalDetails,std::vector <int
 		float obstacleAngle;
 		float obstacleDetails[9];
 		createFinalVector(obstacleXYZ,obstacleAngle,obstacleDetails);
+		// create that 9-length array to fin IK solutions to pick it up and place it some where.
 		float dummyXYZ[3];
 		float dummyDetails[9];
+
 		createDummyPositon(dummyXYZ,objectId,observationMatrix,obstacleObjectPID);
 		// create Dummy position
-		std::cout << "Putting it at dummy XYZ " << dummyXYZ[0]<< " " << dummyXYZ[1]<<  std::endl;
+		std::cout << "Putting it at dummy XYZ " << dummyXYZ[0]<< " " << dummyXYZ[1]<< " " dummyXYZ[1] <<  std::endl;
 		createFinalVector(dummyXYZ,obstacleAngle,dummyDetails);
 		pick_and_place(obstacleDetails,dummyDetails,objectId,observationMatrix,objectId[obstaclePID],currentJointPosition);
-		// then put obstacle in the dummy XYZ
+		// then put obstacle in the dummy XYZ // Recursion rocks \m/
 
 		}
 
 	std::cout << " calculating JP for grasping" << std::endl;
 
 	calculateJpForPickAndPlace(currentDetails,currentJointPosition,currentJp,currentIntermediateJointPosition,currentJpJ20);
+	// Now currentJP,currentIntermediateJointPosition and  currentJpJ20 are updated and robot can go there.
+
 	goToJointPosition(currentJpJ20);
 	updateCurrentJointPosition(currentJointPosition,currentJpJ20);
-	//	std::cout << "initialise hand" << std::endl;
-//
-	initialise_hand();
-	trapezoidal_init();
-	goToJointPosition(currentIntermediateJointPosition);
 
+	initialise_hand();
+
+	trapezoidal_init();
+
+	goToJointPosition(currentIntermediateJointPosition);
 	updateCurrentJointPosition(currentJointPosition,currentIntermediateJointPosition);
 
 	goToJointPosition(currentJp);
 	updateCurrentJointPosition(currentJointPosition,currentJp);
+
 	close_grasp();
+
 	goToJointPosition(currentIntermediateJointPosition);
 	updateCurrentJointPosition(currentJointPosition,currentIntermediateJointPosition);
+
 	goToJointPosition(currentJpJ20);
 	updateCurrentJointPosition(currentJointPosition,currentJpJ20);
 
-
-	//_____________________________________________
+	//______________________ Now the object is picked up. we have to drop it and first we need to search for the
+	// IK solutions
+	//
 
 	calculateJpForPickAndPlace(finalDetails,currentJointPosition,finalJp,finalIntermediateJointPosition,finalJpJ20);
 	goToJointPosition(finalJpJ20);
 	updateCurrentJointPosition(currentJointPosition,finalJpJ20);
-	//initialise_hand();
+
 	goToJointPosition(finalIntermediateJointPosition);
 	updateCurrentJointPosition(currentJointPosition,finalIntermediateJointPosition);
+
 	goToJointPosition(finalJp);
 	updateCurrentJointPosition(currentJointPosition,finalJp);
+
 	trapezoidal_init();
-	//close_grasp();
+
 	goToJointPosition(finalIntermediateJointPosition);
 	updateCurrentJointPosition(currentJointPosition,finalIntermediateJointPosition);
+
 	goToJointPosition(finalJpJ20);
 	updateCurrentJointPosition(currentJointPosition,finalJpJ20);
+
 	open_grasp();
+
 	updateObservationMatrix(observationMatrix,currentMarkerId,locationOfId(currentMarkerId,objectId));
+ 	// update the observation matrix
 	std::cout << "updated matrix" << std::endl << observationMatrix << std::endl;
 	//	close_spread();
 //	trapezoidal_close();
@@ -1007,6 +974,7 @@ for (i=0;i<rows;i++)
 
 			}
 }
+
      using namespace std;
      using namespace Eigen;
      int main()
@@ -1028,34 +996,35 @@ for (i=0;i<rows;i++)
     	 	  }
     	 	//v.run ();
     	 float currentJointPosition[7] = {0.00076699, -1.97339, -0.0280971, 3.17994, 0.0176329, -0.0286238, -0.0207545 };
-
-
-    		std::vector <int> objectId ;
-
+   		 // This is the home position of the WAM ARM.
+   		 std::vector <int> objectId ; // A vector which keeps the tracks of ObjectPID and object MArkerID used in demos.
 
     	 int totalObjects;
     	 int time_stamps;
     	 MatrixXf observationMatrix (8,5);
-    	     	 		 //   	 observationVector.resize(8);
-    	     	 		    	 initialiseMatrixWithZero(observationMatrix,8,5);
-
+    	 initialiseMatrixWithZero(observationMatrix,8,5);
+    	 // Read the basic info about demonstration
+    	 // demo_info is of form 
+    	 // Total_time_stamps(not useful here) Total_objects(very_imp) Then_the_marker_ids_of which are present
+    	 // So we read the marker id which will be used here from demo_info and not from intital_condition.txt because it may happen that
+    	 // an object was hidden under another object at the starting time.
     	 std::ifstream demo_infile2("/home/niladri-64/module_heisenberg/data/demo_info.txt");
-    	 		std::string demo_line2;
+   		 std::string demo_line2;
     	 		while (std::getline(demo_infile2, demo_line2))
     	 		{
     	 			int id;
     	 		    std::istringstream demo_iss2(demo_line2);
     	 		   demo_iss2 >> time_stamps >> totalObjects ;
     	 		    for(int i=0;i<totalObjects;i++)
-    	 		    				{
-    	 		    	demo_iss2 >> id;
-    	 		    	observationMatrix(i,0) = id;
-    	 		    				objectId.push_back(id);
-
-    	 		    				}
+    	 		    	{
+    	 		    		demo_iss2 >> id;
+    	 		    		observationMatrix(i,0) = id;
+    	 		    		objectId.push_back(id);
+	    				}
     	 		}
 
 
+		// now we go through intial condition to see the initial conditions of the object.  
     	 std::ifstream intialFile("/home/niladri-64/module_heisenberg/data/initial_condition.txt");
    			std::string file_line;
    			int index = 0;
@@ -1066,62 +1035,55 @@ for (i=0;i<rows;i++)
     			    std::istringstream iss2(file_line);
     			    iss2 >> id >> xyzangle[0] >> xyzangle[1] >> xyzangle[2] >> xyzangle[3] ;
     			    index = locationOfId(id,objectId);
-    			    //       				objectId.push_back(id);
-  //     				observationMatrix(index,0)=id;
        				observationMatrix(index,1)=xyzangle[0];
        				observationMatrix(index,2)=xyzangle[1];
        				observationMatrix(index,3)=xyzangle[2];
-       				observationMatrix(index,4)=xyzangle[3]; // angle
-       				//index++;
+       				observationMatrix(index,4)=xyzangle[3];// angle
+       			
     			}
 
 
-
-
-
+// Now read the instructions which are given by visuospatial.cpp after going through demonstraions
     	 std::ifstream myReadFile("/home/niladri-64/module_heisenberg/data/robot_instruct.txt");
-
     	 std::string line2;
-    	// std::getline(myReadFile, line2);
     	 std::istringstream iss(line2);
-
     	 cout << "Obs matrix " << endl;
     	  cout << observationMatrix << endl;
 
 
-    	 while (std::getline(myReadFile, line2))
+    	 while (std::getline(myReadFile, line2)) // Every line has a discrete instruction
     	 {
-    	 	// std::cout << line2
+
     	     std::istringstream iss(line2);
-    	    int id;
+	    	    int id; // the id on which the action is to be done
     	     if (!(iss >> id))
     	     	{
     	    	 std::cout << "Error in line loop";
     	    	 break;
     	     	} // error
-    	     std::cout << "And id is " << id << "  " <<iss.str() << std::endl;
 
+    	     std::cout << "And id is " << id << "  " <<iss.str() << std::endl;
+    	     // find its latest position where it is currently.
     	 	updateObservationMatrix(observationMatrix,id,locationOfId(id,objectId));
 
-    	     iss.str().c_str();
+
     	     std::string msgStr = iss.str();
 
     	     char *msg = new char[(iss.str()).length() + 1];
     	     strcpy(msg, (iss.str()).c_str());
+    	     // converting from string to char *
     	     //char *msg = &(iss.str())[0];
     	    std::cout << "command is "<<msg << std::endl;
-			 //std::cout << observationMatrix << std::endl;
 
-    	      std::stringstream ss1(msgStr.substr(6));
-//
-    	      if(msg[3]=='P' && msg[4]=='A' && msg[5]=='C')
+    	     std::stringstream ss1(msgStr.substr(6)); // intialsing a stringstream with string after "id PAC/PRC/POC" in the original instruct 
+    	     // that basically will start with a number  
+     	     // now to check which kind of instruction is given
+    	      if(msg[3]=='P' && msg[4]=='A' && msg[5]=='C') // if it is PAC, ss1 will have 3 float numbers having final XYZ
     	      {
 
     	    	 float finalXYZ[3];
-//
 
     	    	 ss1>> finalXYZ[0]  >> finalXYZ[1] >> finalXYZ[2];
-//    	    	 finalXYZ[2] = observationMatrix(locationOfId(id,objectId),3);
     	    	 float currentXYZ[3];
     	    	 currentXYZ[0]=observationMatrix(locationOfId(id,objectId),1);
     	    	 currentXYZ[1]=observationMatrix(locationOfId(id,objectId),2);
@@ -1132,31 +1094,24 @@ for (i=0;i<rows;i++)
     	    	 float finalOutput[9];
     	    	 createFinalVector(finalXYZ,angle,finalOutput);
     	    	 createFinalVector(currentXYZ,angle,currentOutput);
-    	    	 //pick_and_place(currentOutput,finalOutput);
+
     	    	 pick_and_place(currentOutput,finalOutput,objectId,observationMatrix,id,currentJointPosition);
-    	    	// updateObservationMatrix(observationMatrix,locationOfId(id,objectId),finalOutput);
-    	    	 //    	    	 std::cout << finalXYZ[0];
-//    	    	float *finalXYZ ={} ;
-    	      // pick and place
 
     	      }
 
-    	      if(msg[3]=='P' && msg[4]=='R' && msg[5]=='C')
+    	      if(msg[3]=='P' && msg[4]=='R' && msg[5]=='C') // If it is PRC, ss1 will have 4 numbers "id rel_x rel_y rel_z " 
 				  {
-					// std::cout << msg[4] << std::endl;
-					 int targetId;
 
+					 int targetId; // the id of object relative to which positions are given
 					 float relativeXYZ[3];
 					 ss1>> targetId >> relativeXYZ[0]  >> relativeXYZ[1] >> relativeXYZ[2];
-//					 relativeXYZ[2] = 0;
+  						updateObservationMatrix(observationMatrix,targetId,locationOfId(targetId,objectId));					 
+	
 					 float finalXYZ[3];
 					 finalXYZ[0] = observationMatrix(locationOfId(targetId,objectId),1) + relativeXYZ[0];
 					 finalXYZ[1] = observationMatrix(locationOfId(targetId,objectId),2) + relativeXYZ[1];
 					 finalXYZ[2] = observationMatrix(locationOfId(targetId,objectId),3) + relativeXYZ[2];
-					 //std::cout << observationMatrix(locationOfId(targetId,objectId),3) <<std::endl;
-//					 std::cout << "hello ";
-//					 std::cout << observationMatrix << std::endl;
-	//				 finalXYZ[2] = observationMatrix(locationOfId(targetId,objectId),3) + relativeXYZ[2];
+
 					 std::cout << "Final XYZ in Relative case is " <<    finalXYZ[0] <<" " <<   finalXYZ[1] << " " <<finalXYZ[2] << std::endl;;
 					 float currentXYZ[3];
 					 currentXYZ[0]=observationMatrix(locationOfId(id,objectId),1);
@@ -1169,18 +1124,12 @@ for (i=0;i<rows;i++)
 					 createFinalVector(currentXYZ,angle,currentOutput);
 					 //pick_and_place(currentOutput,finalOutput);
 					 pick_and_place(currentOutput,finalOutput,objectId,observationMatrix,id,currentJointPosition);
-	    	    	 //updateObservationMatrix(observationMatrix,locationOfId(id,objectId),finalOutput);
-	  //    	    	 std::cout << finalXYZ[0];
-	  //    	    	float *finalXYZ ={} ;
-				  // pick and place with respect to targetId
 
 				  }
+
     	      if(msg[3]=='O' && msg[4]=='A' && msg[5]=='C')
 				  {
-					 //std::cout << msg[4] << std::endl;
-//					 int targetId;
-
-	//				 float relativeXYZ[3];
+				
 					 float targetAngle;
 					 ss1>>targetAngle;
 					 float currentXYZ[3];
@@ -1193,14 +1142,8 @@ for (i=0;i<rows;i++)
 					 createFinalVector(currentXYZ,angle,currentOutput);
 
 					 createFinalVector(currentXYZ,targetAngle,finalOutput);
-					 // pick_and_place(currentOutput,finalOutput);
+
 					 pick_and_place(currentOutput,finalOutput,objectId,observationMatrix,id,currentJointPosition);
-	    	    //	 updateObservationMatrix(observationMatrix,locationOfId(id,objectId),finalOutput);
-
-
-	  //    	    	 std::cout << finalXYZ[0];
-	  //    	    	float *finalXYZ ={} ;
-				  // change the angle
 
 				  }
 
