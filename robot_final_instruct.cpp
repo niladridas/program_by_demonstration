@@ -898,7 +898,7 @@ void pick_and_place (float *currentDetails, float *finalDetails,std::vector <int
 
 		createDummyPositon(dummyXYZ,objectId,observationMatrix,obstacleObjectPID);
 		// create Dummy position
-		std::cout << "Putting it at dummy XYZ " << dummyXYZ[0]<< " " << dummyXYZ[1]<< " " dummyXYZ[1] <<  std::endl;
+		std::cout << "Putting it at dummy XYZ " << dummyXYZ[0]<< " " << dummyXYZ[1]<< " " << dummyXYZ[2] <<  std::endl;
 		createFinalVector(dummyXYZ,obstacleAngle,dummyDetails);
 		pick_and_place(obstacleDetails,dummyDetails,objectId,observationMatrix,objectId[obstaclePID],currentJointPosition);
 		// then put obstacle in the dummy XYZ // Recursion rocks \m/
